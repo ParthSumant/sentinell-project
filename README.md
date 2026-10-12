@@ -6,11 +6,10 @@ SENTINEL is an end-to-end full-stack campus telemetry, anomaly detection, incide
 
 ---
 
-## 🚀 Quick Start (Run Locally in 1 Command)
-
+## 🚀 Quick Start 
 ### Prerequisites
-- Python 3.10+
-- Node.js 18+ (only if you want to modify and rebuild the React frontend)
+- Python 3.14
+- Node.js 
 
 ### 1. Install Backend Dependencies
 ```bash

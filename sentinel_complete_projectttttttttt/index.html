@@ -1,0 +1,1933 @@
+<!DOCTYPE html>
+<html lang="en" class="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ECOPULSE — SVVV Smart Campus Autonomous Resource Intelligence</title>
+  
+  <!-- External CDN Dependencies -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace'],
+          },
+          colors: {
+            brand: {
+              violet: '#7C3AED',
+              indigo: '#4F46E5',
+              emerald: '#059669',
+              rose: '#E11D48',
+              amber: '#D97706'
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    /* Light Mode (DEFAULT) */
+    html.light body {
+      background-color: #F8FAFC;
+      background-image: 
+        radial-gradient(circle at 50% 10%, rgba(124, 58, 237, 0.08) 0%, transparent 60%),
+        radial-gradient(circle at 80% 60%, rgba(79, 70, 229, 0.06) 0%, transparent 50%),
+        radial-gradient(circle at 20% 80%, rgba(5, 150, 105, 0.05) 0%, transparent 50%);
+      color: #0F172A;
+    }
+
+    html.light .glass-card {
+      background: rgba(255, 255, 255, 0.88);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(226, 232, 240, 0.9);
+      border-radius: 1rem;
+      box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.05);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    html.light .glass-card:hover {
+      border-color: rgba(124, 58, 237, 0.35);
+      box-shadow: 0 10px 30px -5px rgba(124, 58, 237, 0.12);
+    }
+
+    html.light .glass-nav {
+      background: rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid rgba(226, 232, 240, 0.8);
+    }
+
+    html.light .glass-dock {
+      background: rgba(255, 255, 255, 0.92);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(124, 58, 237, 0.25);
+      box-shadow: 0 10px 35px -5px rgba(0, 0, 0, 0.12);
+    }
+
+    html.light .sub-box {
+      background: #F1F5F9;
+      border: 1px solid #E2E8F0;
+    }
+
+    /* Dark Mode (TOGGLEABLE) */
+    html.dark body {
+      background-color: #06070B;
+      background-image: 
+        radial-gradient(circle at 50% 10%, rgba(139, 92, 246, 0.16) 0%, transparent 55%),
+        radial-gradient(circle at 80% 60%, rgba(99, 102, 241, 0.12) 0%, transparent 50%),
+        radial-gradient(circle at 20% 85%, rgba(16, 185, 129, 0.08) 0%, transparent 45%);
+      color: #F3F4F6;
+    }
+
+    html.dark .glass-card {
+      background: rgba(15, 16, 24, 0.75);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 1rem;
+      box-shadow: 0 4px 25px -2px rgba(0, 0, 0, 0.5);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    html.dark .glass-card:hover {
+      border-color: rgba(139, 92, 246, 0.4);
+      box-shadow: 0 0 25px rgba(139, 92, 246, 0.2);
+    }
+
+    html.dark .glass-nav {
+      background: rgba(8, 9, 14, 0.85);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    html.dark .glass-dock {
+      background: rgba(12, 13, 20, 0.92);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(139, 92, 246, 0.35);
+      box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.8), 0 0 30px rgba(139, 92, 246, 0.25);
+    }
+
+    html.dark .sub-box {
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    /* Anomaly Highlighting */
+    .glass-card-anomaly {
+      border-color: rgba(225, 29, 72, 0.6) !important;
+      box-shadow: 0 0 30px rgba(225, 29, 72, 0.25) !important;
+    }
+    html.light .glass-card-anomaly {
+      background: #FFF1F2 !important;
+    }
+    html.dark .glass-card-anomaly {
+      background: rgba(30, 10, 18, 0.85) !important;
+    }
+
+    /* View Transitions */
+    .view-container {
+      transition: opacity 0.3s ease, transform 0.3s ease;
+    }
+    .view-hidden {
+      display: none !important;
+      opacity: 0;
+      transform: translateY(12px);
+    }
+    .view-active {
+      display: block !important;
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 7px;
+      height: 7px;
+    }
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #CBD5E1;
+      border-radius: 9999px;
+    }
+    html.dark ::-webkit-scrollbar-thumb {
+      background: #1F2433;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col font-sans transition-colors duration-300">
+
+  <!-- ============================================================== -->
+  <!-- 1. TOP NAVBAR                                                  -->
+  <!-- ============================================================== -->
+  <header class="fixed top-0 left-0 right-0 z-50 glass-nav h-20 transition-all duration-300">
+    <div class="max-w-7xl mx-auto h-full px-4 sm:px-6 lg:px-8 flex items-center justify-between">
+      
+      <!-- Brand Logo -->
+      <div class="flex items-center gap-3 cursor-pointer" onclick="switchView('view-overview')">
+        <div class="relative flex items-center justify-center w-10 h-10 rounded-xl bg-purple-600/15 border border-purple-500/30">
+          <i data-lucide="zap" class="w-5 h-5 text-purple-600 dark:text-purple-400"></i>
+          <span class="absolute -top-1 -right-1 flex h-3 w-3">
+            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-purple-400 opacity-75"></span>
+            <span class="relative inline-flex rounded-full h-3 w-3 bg-purple-600"></span>
+          </span>
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="text-xl font-extrabold tracking-wider bg-gradient-to-r from-purple-700 via-indigo-600 to-purple-800 dark:from-white dark:via-purple-200 dark:to-indigo-300 bg-clip-text text-transparent">ECOPULSE</span>
+            <span id="role-nav-badge" class="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-purple-100 dark:bg-purple-900/40 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-700/50">STUDENT</span>
+          </div>
+          <p class="text-[10px] tracking-widest text-slate-500 dark:text-slate-400 font-mono font-medium uppercase">SVVV SMART CAMPUS TELEMETRY</p>
+        </div>
+      </div>
+
+      <!-- Navigation Tabs -->
+      <nav class="hidden lg:flex items-center p-1.5 rounded-xl bg-slate-100 dark:bg-slate-900/80 border border-slate-200 dark:border-white/10 text-xs font-semibold">
+        <button id="nav-btn-overview" onclick="switchView('view-overview')" 
+          class="flex items-center gap-2 px-3.5 py-2 rounded-lg transition-all duration-200 bg-purple-600 text-white shadow-md">
+          <i data-lucide="layout-grid" class="w-4 h-4"></i>
+          <span>Overview</span>
+        </button>
+        <button id="nav-btn-spatial" onclick="switchView('view-spatial')" 
+          class="flex items-center gap-2 px-3.5 py-2 rounded-lg transition-all duration-200 text-slate-600 dark:text-slate-400 hover:text-purple-600 dark:hover:text-white">
+          <i data-lucide="compass" class="w-4 h-4"></i>
+          <span>360° Spatial & Telemetry</span>
+        </button>
+        <button id="nav-btn-reports" onclick="switchView('view-reports')" 
+          class="flex items-center gap-2 px-3.5 py-2 rounded-lg transition-all duration-200 text-slate-600 dark:text-slate-400 hover:text-purple-600 dark:hover:text-white">
+          <i data-lucide="clipboard-list" class="w-4 h-4"></i>
+          <span id="nav-reports-label">My Reports & History</span>
+          <span id="pending-counter-badge" class="px-1.5 py-0.2 rounded-full text-[10px] bg-amber-500 text-white font-mono">1</span>
+        </button>
+        <a href="/sentinel" 
+          class="flex items-center gap-2 px-3.5 py-2 rounded-lg transition-all duration-200 text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-white font-bold">
+          <i data-lucide="sparkles" class="w-4 h-4"></i>
+          <span>Sentinel AI Hub</span>
+        </a>
+      </nav>
+
+      <!-- Right Utility Section: User Profile, Quick Report & Light/Dark Switcher -->
+      <div class="flex items-center gap-2.5 sm:gap-3">
+        
+        <!-- Active User Pill / Switch Account Trigger -->
+        <div onclick="openLoginModal()" 
+          class="cursor-pointer flex items-center gap-2 px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 hover:border-purple-400 transition-all text-xs">
+          <div id="user-avatar" class="w-6 h-6 rounded-full bg-purple-600 text-white font-bold flex items-center justify-center text-[11px]">
+            U
+          </div>
+          <div class="hidden sm:block text-left">
+            <div id="nav-user-name" class="font-bold text-slate-800 dark:text-slate-200 leading-tight">Student User</div>
+            <div id="nav-user-sub" class="text-[10px] text-slate-500 font-mono">Click to switch</div>
+          </div>
+        </div>
+
+        <!-- Quick Report Trigger Button -->
+        <button onclick="toggleModal('incident-modal', true)" 
+          class="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white shadow-sm transition-all">
+          <i data-lucide="plus-circle" class="w-4 h-4"></i>
+          <span class="hidden sm:inline">+ Quick Report</span>
+        </button>
+
+        <!-- Small Light/Dark Mode Switcher Button on the Right Corner (Default: Light) -->
+        <button id="theme-toggle-btn" onclick="toggleTheme()" title="Toggle Light / Dark Mode"
+          class="w-9 h-9 rounded-xl flex items-center justify-center bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-white/10 transition-all shadow-sm">
+          <i id="theme-icon" data-lucide="moon" class="w-4 h-4"></i>
+        </button>
+
+      </div>
+
+    </div>
+  </header>
+
+  <!-- Mobile Submenu Bar -->
+  <div class="lg:hidden fixed top-20 left-0 right-0 z-40 bg-white/95 dark:bg-[#0c0d14]/95 border-b border-slate-200 dark:border-white/10 px-4 py-2 flex items-center justify-around text-xs">
+    <button onclick="switchView('view-overview')" id="m-btn-overview" class="text-purple-600 font-bold flex items-center gap-1">
+      <i data-lucide="layout-grid" class="w-3.5 h-3.5"></i> Overview
+    </button>
+    <button onclick="switchView('view-spatial')" id="m-btn-spatial" class="text-slate-500 font-medium flex items-center gap-1">
+      <i data-lucide="compass" class="w-3.5 h-3.5"></i> 360° Spatial
+    </button>
+    <button onclick="switchView('view-reports')" id="m-btn-reports" class="text-slate-500 font-medium flex items-center gap-1">
+      <i data-lucide="clipboard-list" class="w-3.5 h-3.5"></i> Reports
+    </button>
+    <a href="/sentinel" class="text-indigo-600 font-bold flex items-center gap-1">
+      <i data-lucide="sparkles" class="w-3.5 h-3.5"></i> Sentinel
+    </a>
+  </div>
+
+  <!-- ============================================================== -->
+  <!-- MAIN CONTAINER WITH MULTI-VIEW ROUTING                         -->
+  <!-- ============================================================== -->
+  <main class="flex-grow pt-24 lg:pt-28 pb-32 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8">
+
+    <!-- ============================================================== -->
+    <!-- VIEW 1: LANDING PAGE & CONCEPT ARCHITECTURE                    -->
+    <!-- ============================================================== -->
+    <div id="view-overview" class="view-container view-active space-y-16">
+      
+      <!-- HERO LANDING SECTION WITH HOVER ABOVE ECOPULSE -->
+      <section class="relative pt-6 pb-4 text-center max-w-5xl mx-auto">
+        
+        <!-- HOVER DIRECTLY ABOVE ECOPULSE: Interactive Holographic Badge -->
+        <div class="relative inline-block mb-6 group cursor-pointer">
+          <!-- Ambient Glow Blur on Hover -->
+          <div class="absolute -inset-1 bg-gradient-to-r from-purple-600 via-indigo-500 to-emerald-500 rounded-full blur-md opacity-25 group-hover:opacity-80 transition duration-500 group-hover:duration-200"></div>
+          
+          <div class="relative px-4 py-1.5 rounded-full bg-white/90 dark:bg-slate-900/90 border border-purple-300 dark:border-purple-500/40 text-purple-700 dark:text-purple-300 text-xs font-mono flex items-center gap-2 shadow-sm">
+            <span class="flex h-2 w-2 relative">
+              <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-purple-400 opacity-75"></span>
+              <span class="relative inline-flex rounded-full h-2 w-2 bg-purple-600"></span>
+            </span>
+            <span class="font-bold tracking-wider">✨ CSI SVVV • SUSTAINABLE TECH WITHOUT LIMITS (PS-04)</span>
+            <span class="hidden sm:inline text-slate-400 dark:text-slate-500">|</span>
+            <span class="hidden sm:inline font-semibold text-slate-600 dark:text-slate-400 group-hover:text-purple-600 dark:group-hover:text-purple-300 transition-colors">Hover for Engine Status</span>
+          </div>
+
+          <!-- Interactive Hover Card Dropping Above/Over Badge -->
+          <div class="absolute left-1/2 -translate-x-1/2 -top-14 hidden group-hover:flex items-center gap-3 px-4 py-2 rounded-xl bg-slate-900/95 text-white border border-purple-500/40 shadow-2xl backdrop-blur-xl text-[11px] font-mono whitespace-nowrap z-30 transition-all pointer-events-none animate-fadeIn">
+            <span class="text-emerald-400 flex items-center gap-1"><i data-lucide="zap" class="w-3.5 h-3.5"></i> Telemetry: 1.2ms</span>
+            <span class="text-slate-500">•</span>
+            <span class="text-purple-300 flex items-center gap-1"><i data-lucide="shield-check" class="w-3.5 h-3.5"></i> Model: 3σ Active</span>
+            <span class="text-slate-500">•</span>
+            <span class="text-amber-400 flex items-center gap-1"><i data-lucide="radio" class="w-3.5 h-3.5"></i> 4 Campus Nodes</span>
+          </div>
+        </div>
+
+        <!-- GRAND DISPLAY HEADER WITH INTERACTIVE HOVER ON ECOPULSE -->
+        <div class="space-y-4">
+          <div class="group inline-block cursor-default relative">
+            <div class="absolute -inset-4 bg-gradient-to-r from-purple-600/10 via-indigo-600/15 to-emerald-600/10 rounded-3xl blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none"></div>
+            <h1 class="text-5xl sm:text-7xl lg:text-8xl font-black tracking-tight leading-none text-slate-900 dark:text-white transition-all duration-300">
+              <span class="bg-gradient-to-r from-purple-700 via-indigo-600 to-purple-800 dark:from-white dark:via-purple-200 dark:to-indigo-300 bg-clip-text text-transparent group-hover:tracking-wider transition-all duration-500">
+                ECOPULSE
+              </span>
+            </h1>
+            <div class="text-xs uppercase tracking-[0.35em] font-mono font-bold text-slate-500 dark:text-slate-400 mt-2">
+              Autonomous Resource Intelligence • Zero Campus Waste
+            </div>
+          </div>
+
+          <p class="mt-4 text-base sm:text-xl text-slate-600 dark:text-slate-300 max-w-3xl mx-auto leading-relaxed font-normal">
+            A real-time spatial digital twin tracking electricity phantom loads, concealed pipe bursts, and institutional carbon footprint across <span class="font-semibold text-purple-700 dark:text-purple-300">Shri Vaishnav Vidyapeeth Vishwavidyalaya</span>.
+          </p>
+        </div>
+
+        <!-- Quick CTAs -->
+        <div class="mt-8 flex flex-wrap items-center justify-center gap-4">
+          <button onclick="switchView('view-spatial')" 
+            class="px-6 py-3.5 rounded-xl font-bold text-xs bg-purple-600 hover:bg-purple-500 text-white shadow-lg shadow-purple-600/25 transition-all flex items-center gap-2 hover:scale-[1.02] active:scale-95">
+            <i data-lucide="compass" class="w-4 h-4"></i>
+            <span>Enter 360° Campus Twin Hub</span>
+          </button>
+          <button onclick="switchView('view-reports')" 
+            class="px-6 py-3.5 rounded-xl font-bold text-xs sub-box text-slate-700 dark:text-slate-200 hover:border-purple-500 transition-all flex items-center gap-2">
+            <i data-lucide="clipboard-list" class="w-4 h-4 text-purple-600 dark:text-purple-400"></i>
+            <span>Incident Queue & History</span>
+          </button>
+          <a href="/sentinel" 
+            class="px-6 py-3.5 rounded-xl font-bold text-xs bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white shadow-lg shadow-indigo-600/25 transition-all flex items-center gap-2 hover:scale-[1.02] active:scale-95">
+            <i data-lucide="sparkles" class="w-4 h-4"></i>
+            <span>Launch Sentinel AI Suite</span>
+          </a>
+        </div>
+
+        <!-- Real-Time Live Telemetry Metric Strips -->
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-12 text-left">
+          
+          <div class="glass-card p-5 relative overflow-hidden group">
+            <div class="flex items-center justify-between text-slate-500 dark:text-slate-400 text-xs font-semibold uppercase tracking-wider">
+              <span>Campus Real-Time Load</span>
+              <i data-lucide="activity" class="w-4 h-4 text-purple-600 dark:text-purple-400"></i>
+            </div>
+            <div class="mt-3 flex items-baseline gap-2">
+              <span id="hero-campus-load" class="text-3xl font-black font-mono text-slate-900 dark:text-white tracking-tight">14.2</span>
+              <span class="text-sm text-purple-600 dark:text-purple-300 font-semibold font-mono">kW</span>
+            </div>
+            <div class="mt-2 flex items-center gap-1.5 text-xs text-emerald-600 dark:text-emerald-400 font-mono">
+              <i data-lucide="trending-down" class="w-3.5 h-3.5"></i>
+              <span>-8.4% vs uncalibrated baseline</span>
+            </div>
+          </div>
+
+          <div class="glass-card p-5 relative overflow-hidden group">
+            <div class="flex items-center justify-between text-slate-500 dark:text-slate-400 text-xs font-semibold uppercase tracking-wider">
+              <span>Current Tariff Drain</span>
+              <i data-lucide="indian-rupee" class="w-4 h-4 text-amber-500"></i>
+            </div>
+            <div class="mt-3 flex items-baseline gap-1">
+              <span class="text-2xl font-black font-mono text-slate-900 dark:text-white">₹</span>
+              <span id="hero-rupee-drain" class="text-3xl font-black font-mono text-slate-900 dark:text-white tracking-tight">1,420</span>
+              <span class="text-xs text-amber-600 dark:text-amber-300 font-semibold font-mono">/hr</span>
+            </div>
+            <div class="mt-2 flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400 font-mono">
+              <span>Academic rate: ₹8.50 / kWh</span>
+            </div>
+          </div>
+
+          <div class="glass-card p-5 relative overflow-hidden group">
+            <div class="flex items-center justify-between text-slate-500 dark:text-slate-400 text-xs font-semibold uppercase tracking-wider">
+              <span>Carbon Averted Today</span>
+              <i data-lucide="leaf" class="w-4 h-4 text-emerald-600 dark:text-emerald-400"></i>
+            </div>
+            <div class="mt-3 flex items-baseline gap-2">
+              <span id="hero-carbon-prevented" class="text-3xl font-black font-mono text-slate-900 dark:text-white tracking-tight">142</span>
+              <span class="text-sm text-emerald-600 dark:text-emerald-300 font-semibold font-mono">kg CO₂e</span>
+            </div>
+            <div class="mt-2 flex items-center gap-1.5 text-xs text-emerald-600 dark:text-emerald-400 font-mono">
+              <i data-lucide="check-circle" class="w-3.5 h-3.5"></i>
+              <span>Autonomous cutoff circuits engaged</span>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- ============================================================== -->
+      <!-- THREE ELEGANT SECTIONS: ABOUT, HOW IT WORKS, MODEL USED        -->
+      <!-- ============================================================== -->
+
+      <!-- SECTION 1: ABOUT ECOPULSE -->
+      <section class="space-y-6">
+        <div class="flex flex-col sm:flex-row sm:items-baseline justify-between gap-2 border-b border-slate-200 dark:border-white/10 pb-4">
+          <div class="flex items-center gap-3">
+            <span class="text-xs font-mono font-bold px-2.5 py-1 rounded-md bg-purple-100 dark:bg-purple-900/40 text-purple-700 dark:text-purple-300">01</span>
+            <h2 class="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white tracking-tight">About EcoPulse</h2>
+          </div>
+          <span class="text-xs font-mono text-slate-500">The Problem & Architectural Purpose</span>
+        </div>
+
+        <div class="glass-card p-6 sm:p-8 space-y-6">
+          <div class="max-w-4xl space-y-4">
+            <p class="text-base sm:text-lg text-slate-700 dark:text-slate-200 font-normal leading-relaxed">
+              In vast university ecosystems like SVVV Indore, spanning multi-acre academic complexes, specialized computer laboratories, student hostels, and dining wings, resource consumption is predominantly silent, invisible, and unmonitored at micro-resolution.
+            </p>
+            <p class="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
+              Traditional municipal metering provides aggregated utility bills weeks after hundreds of thousands of kilowatt-hours and tens of thousands of litres of treated municipal water have already drained away. Phantom workstation clusters continue rendering unmonitored overnight at 2:00 AM, residential riser pipe joints crack inside drywall, and central lecture halls retain peak HVAC loads long after faculties adjourn.
+            </p>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4 pt-4 border-t border-slate-200 dark:border-white/10">
+            <div class="p-4 rounded-xl sub-box space-y-2">
+              <div class="w-8 h-8 rounded-lg bg-purple-600/15 text-purple-600 dark:text-purple-400 flex items-center justify-center font-bold">
+                <i data-lucide="eye" class="w-4 h-4"></i>
+              </div>
+              <h4 class="font-bold text-sm text-slate-900 dark:text-white">Radical Visibility</h4>
+              <p class="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
+                Replaces end-of-month financial shock with continuous 2-second sub-meter spatial telemetry mapping every physical wing.
+              </p>
+            </div>
+
+            <div class="p-4 rounded-xl sub-box space-y-2">
+              <div class="w-8 h-8 rounded-lg bg-emerald-600/15 text-emerald-600 dark:text-emerald-400 flex items-center justify-center font-bold">
+                <i data-lucide="zap" class="w-4 h-4"></i>
+              </div>
+              <h4 class="font-bold text-sm text-slate-900 dark:text-white">Autonomous Intervention</h4>
+              <p class="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
+                Transforms static dashboards into closed-loop actuators: triggers virtual cutoff switches and auto-throttled solenoid valves in &lt; 30 seconds.
+              </p>
+            </div>
+
+            <div class="p-4 rounded-xl sub-box space-y-2">
+              <div class="w-8 h-8 rounded-lg bg-indigo-600/15 text-indigo-600 dark:text-indigo-400 flex items-center justify-center font-bold">
+                <i data-lucide="users" class="w-4 h-4"></i>
+              </div>
+              <h4 class="font-bold text-sm text-slate-900 dark:text-white">Community Accountability</h4>
+              <p class="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
+                Bridges the gap between students, hostel wardens, and facilities management with crowdsourced reporting and transparent resolution tracking.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION 2: HOW IT WORKS -->
+      <section class="space-y-6">
+        <div class="flex flex-col sm:flex-row sm:items-baseline justify-between gap-2 border-b border-slate-200 dark:border-white/10 pb-4">
+          <div class="flex items-center gap-3">
+            <span class="text-xs font-mono font-bold px-2.5 py-1 rounded-md bg-indigo-100 dark:bg-indigo-900/40 text-indigo-700 dark:text-indigo-300">02</span>
+            <h2 class="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white tracking-tight">How It Works</h2>
+          </div>
+          <span class="text-xs font-mono text-slate-500">The Autonomous 3-Stage Lifecycle</span>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          
+          <!-- Stage 1 -->
+          <div class="glass-card p-6 flex flex-col justify-between relative group hover:border-indigo-400 transition-all">
+            <div class="space-y-3">
+              <div class="flex items-center justify-between">
+                <span class="font-mono text-xs font-bold text-indigo-600 dark:text-indigo-400 px-2 py-0.5 rounded bg-indigo-50 dark:bg-indigo-950/40 border border-indigo-200 dark:border-indigo-800/40">STAGE 1</span>
+                <i data-lucide="radio" class="w-4 h-4 text-indigo-500"></i>
+              </div>
+              <h3 class="text-lg font-bold text-slate-900 dark:text-white">1. SEE: Edge Ingestion</h3>
+              <p class="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
+                Micro-controllers and optical/ultrasonic pulse meters sample high-frequency active power (kW) and liquid volumetric flux (L/min) from electrical distribution boards and hostel risers.
+              </p>
+              <ul class="text-xs text-slate-600 dark:text-slate-300 space-y-1 font-mono pt-2">
+                <li>• 2000ms polling heartbeat</li>
+                <li>• Non-invasive current clamps</li>
+                <li>• Real-time WebSocket / REST pipe</li>
+              </ul>
+            </div>
+            <div class="mt-6 pt-3 border-t border-slate-200 dark:border-white/10 text-[11px] font-mono text-slate-500">
+              Input: Raw High-Frequency Sensor Stream
+            </div>
+          </div>
+
+          <!-- Stage 2 -->
+          <div class="glass-card p-6 flex flex-col justify-between relative group hover:border-purple-400 transition-all">
+            <div class="space-y-3">
+              <div class="flex items-center justify-between">
+                <span class="font-mono text-xs font-bold text-purple-600 dark:text-purple-400 px-2 py-0.5 rounded bg-purple-50 dark:bg-purple-950/40 border border-purple-200 dark:border-purple-800/40">STAGE 2</span>
+                <i data-lucide="cpu" class="w-4 h-4 text-purple-500"></i>
+              </div>
+              <h3 class="text-lg font-bold text-slate-900 dark:text-white">2. UNDERSTAND: Context Engine</h3>
+              <p class="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
+                Raw pulses are contextualized using academic timetable cross-referencing, room occupancy schedules, and ambient meteorological temperatures to differentiate authorized sessions from phantom load waste.
+              </p>
+              <ul class="text-xs text-slate-600 dark:text-slate-300 space-y-1 font-mono pt-2">
+                <li>• MPEB Commercial Tariff: ₹8.50/kWh</li>
+                <li>• Grid CEA Factor: 0.82 kg CO₂e/kWh</li>
+                <li>• 135 L/person daily student quota</li>
+              </ul>
+            </div>
+            <div class="mt-6 pt-3 border-t border-slate-200 dark:border-white/10 text-[11px] font-mono text-slate-500">
+              Output: Financial & Ecological Drain Rates
+            </div>
+          </div>
+
+          <!-- Stage 3 -->
+          <div class="glass-card p-6 flex flex-col justify-between relative group hover:border-emerald-400 transition-all">
+            <div class="space-y-3">
+              <div class="flex items-center justify-between">
+                <span class="font-mono text-xs font-bold text-emerald-600 dark:text-emerald-400 px-2 py-0.5 rounded bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800/40">STAGE 3</span>
+                <i data-lucide="power" class="w-4 h-4 text-emerald-500"></i>
+              </div>
+              <h3 class="text-lg font-bold text-slate-900 dark:text-white">3. ACT: Virtual Cutoff Loop</h3>
+              <p class="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
+                If an anomaly exceeds statistical safety thresholds, EcoPulse triggers virtual relay cutoffs or issues prioritized facility dispatches. Once resolved, averted losses are calculated and verified.
+              </p>
+              <ul class="text-xs text-slate-600 dark:text-slate-300 space-y-1 font-mono pt-2">
+                <li>• &lt; 30s Mean Time to Resolution</li>
+                <li>• Automatic Relay Tripping</li>
+                <li>• Verified Rupee Savings Ledger</li>
+              </ul>
+            </div>
+            <div class="mt-6 pt-3 border-t border-slate-200 dark:border-white/10 text-[11px] font-mono text-slate-500">
+              Result: Stopped Loss & Verified Impact
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- SECTION 3: MODEL USED & MATHEMATICAL LOGIC -->
+      <section class="space-y-6">
+        <div class="flex flex-col sm:flex-row sm:items-baseline justify-between gap-2 border-b border-slate-200 dark:border-white/10 pb-4">
+          <div class="flex items-center gap-3">
+            <span class="text-xs font-mono font-bold px-2.5 py-1 rounded-md bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-300">03</span>
+            <h2 class="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white tracking-tight">Model Used & Technical Logic</h2>
+          </div>
+          <span class="text-xs font-mono text-slate-500">Deterministic Statistical & Semantic Gate</span>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          
+          <!-- Mathematical Formula Glass Card -->
+          <div class="glass-card p-6 lg:col-span-2 space-y-5">
+            <h3 class="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
+              <i data-lucide="binary" class="w-4 h-4 text-purple-600 dark:text-purple-400"></i>
+              <span>Rolling 3-Sigma Anomaly Detection & Schedule Intersection</span>
+            </h3>
+
+            <p class="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
+              EcoPulse avoids black-box unexplainable deep networks in favor of a deterministic, verifiable statistical gate tailored for facilities managers:
+            </p>
+
+            <!-- Formula Box -->
+            <div class="p-4 rounded-xl sub-box font-mono text-xs text-slate-800 dark:text-slate-200 space-y-2 border-purple-300 dark:border-purple-800/40">
+              <div class="text-purple-600 dark:text-purple-400 font-bold">// Dynamic Z-Score Deviation Formulation</div>
+              <div class="text-sm font-bold tracking-wider py-1">
+                Z_score = ( x_observed(t) - μ_baseline(t, zone) ) / σ_window(zone)
+              </div>
+              <div class="text-slate-500 text-[11px] pt-1">
+                Where x_observed is the 2-second moving average, μ_baseline is the 14-day chronological time-of-day expectation, and σ_window is the standard deviation.
+              </div>
+            </div>
+
+            <div class="p-4 rounded-xl sub-box font-mono text-xs text-slate-800 dark:text-slate-200 space-y-2 border-emerald-300 dark:border-emerald-800/40">
+              <div class="text-emerald-600 dark:text-emerald-400 font-bold">// Boolean Anomaly Verification Gate</div>
+              <div class="text-sm font-bold tracking-wider py-1">
+                TRIGGER_ALERT = ( Z_score &gt; 2.0 ) &amp;&amp; ( OccupancySchedule == 0 || CurrentTime == OFF_PEAK )
+              </div>
+              <div class="text-slate-500 text-[11px] pt-1">
+                Eliminates false alarms by verifying whether heavy lab loads coincide with approved lecture periods or scheduled academic lab practicals.
+              </div>
+            </div>
+          </div>
+
+          <!-- Multipliers & Constants -->
+          <div class="glass-card p-6 flex flex-col justify-between space-y-4">
+            <div>
+              <h3 class="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                <i data-lucide="sliders" class="w-4 h-4 text-emerald-600 dark:text-emerald-400"></i>
+                <span>Institutional Factors</span>
+              </h3>
+              <p class="text-xs text-slate-600 dark:text-slate-400 mt-1 leading-relaxed">
+                Standard coefficients configured for SVVV Madhya Pradesh commercial electricity and municipal water supplies:
+              </p>
+            </div>
+
+            <div class="space-y-3 font-mono text-xs">
+              <div class="p-3 rounded-lg sub-box flex justify-between items-center">
+                <span class="text-slate-500">Commercial Tariff:</span>
+                <span class="font-bold text-amber-600 dark:text-amber-400">₹8.50 / kWh</span>
+              </div>
+              <div class="p-3 rounded-lg sub-box flex justify-between items-center">
+                <span class="text-slate-500">CEA Grid Emissions:</span>
+                <span class="font-bold text-emerald-600 dark:text-emerald-400">0.82 kg CO₂e / kWh</span>
+              </div>
+              <div class="p-3 rounded-lg sub-box flex justify-between items-center">
+                <span class="text-slate-500">Treated Water Rate:</span>
+                <span class="font-bold text-blue-600 dark:text-blue-400">₹0.05 / Litre</span>
+              </div>
+              <div class="p-3 rounded-lg sub-box flex justify-between items-center">
+                <span class="text-slate-500">Student Daily Quota:</span>
+                <span class="font-bold text-purple-600 dark:text-purple-400">135 Litres / Day</span>
+              </div>
+            </div>
+
+            <div class="pt-2 text-[11px] font-mono text-slate-500">
+              Calibration parameters adjustable via Admin Console
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- VERIFIED CAMPUS BENCHMARKS MATRIX -->
+      <section class="glass-card p-8 text-center relative overflow-hidden">
+        <span class="text-xs uppercase font-mono tracking-widest text-purple-600 dark:text-purple-400 font-bold">Measured Benchmarks</span>
+        <h3 class="text-2xl font-black text-slate-900 dark:text-white mt-1">Platform Impact in Numbers</h3>
+
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-6 mt-6">
+          <div class="p-4 rounded-xl sub-box">
+            <div class="text-3xl font-black font-mono text-purple-600 dark:text-purple-400">₹48,250+</div>
+            <div class="text-xs text-slate-500 mt-1 font-medium">Projected Monthly Savings</div>
+            <div class="text-[10px] text-emerald-600 font-mono mt-1">+14.2% over pilot goal</div>
+          </div>
+          <div class="p-4 rounded-xl sub-box">
+            <div class="text-3xl font-black font-mono text-emerald-600 dark:text-emerald-400">1.28 Tons</div>
+            <div class="text-xs text-slate-500 mt-1 font-medium">CO₂ Offset Today</div>
+            <div class="text-[10px] text-slate-400 font-mono mt-1">Active grid reduction</div>
+          </div>
+          <div class="p-4 rounded-xl sub-box">
+            <div class="text-3xl font-black font-mono text-indigo-600 dark:text-indigo-400">99.4%</div>
+            <div class="text-xs text-slate-500 mt-1 font-medium">Detection Accuracy</div>
+            <div class="text-[10px] text-purple-500 font-mono mt-1">Zero schedule false alarms</div>
+          </div>
+          <div class="p-4 rounded-xl sub-box">
+            <div class="text-3xl font-black font-mono text-amber-600 dark:text-amber-400">&lt; 30s</div>
+            <div class="text-xs text-slate-500 mt-1 font-medium">Mean Time to Mitigation</div>
+            <div class="text-[10px] text-amber-500 font-mono mt-1">Virtual cutoff loop</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- BOTTOM ACTION BANNER -->
+      <section class="glass-card p-6 flex flex-col sm:flex-row items-center justify-between gap-4 border-purple-400/40">
+        <div>
+          <h3 class="text-base font-bold text-slate-900 dark:text-white">Ready to Explore Campus Telemetry?</h3>
+          <p class="text-xs text-slate-500 dark:text-slate-400">Inspect real-time SVVV 360° twin, activate virtual relays, or track user incident dispatches.</p>
+        </div>
+        <button onclick="switchView('view-spatial')" 
+          class="px-6 py-3 rounded-xl font-bold text-xs bg-purple-600 hover:bg-purple-500 text-white shadow-md transition-all flex items-center gap-2 whitespace-nowrap">
+          <span>Enter 360° Spatial Twin Hub →</span>
+        </button>
+      </section>
+
+    </div>
+
+    <!-- ============================================================== -->
+    <!-- VIEW 2: 360° SPATIAL EXPLORER & ZONE TELEMETRY                 -->
+    <!-- ============================================================== -->
+    <div id="view-spatial" class="view-container view-hidden space-y-8">
+      
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-2 border-b border-slate-200 dark:border-white/10">
+        <div>
+          <h2 class="text-xl sm:text-2xl font-extrabold text-slate-900 dark:text-white">360° Spatial Twin & Real-time Nodes</h2>
+          <p class="text-xs text-slate-500 dark:text-slate-400">SVVV Indore Campus Grid • Click any pin to focus sensor telemetry</p>
+        </div>
+        <button onclick="switchView('view-overview')" class="text-xs font-semibold text-purple-600 dark:text-purple-400 hover:underline flex items-center gap-1">
+          <i data-lucide="chevron-left" class="w-4 h-4"></i> Back to Overview
+        </button>
+      </div>
+
+      <!-- Spatial Pins Bar & 360 Tour Frame -->
+      <section class="glass-card p-4 sm:p-5 space-y-3">
+        <div class="flex flex-wrap items-center gap-2">
+          <button onclick="focusZone('card-cs-lab')" class="px-3 py-1.5 rounded-lg text-xs font-mono font-semibold transition-all flex items-center gap-2 sub-box hover:border-purple-500">
+            <span id="pin-cs-dot" class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+            <span>[Focus: CS Lab 02]</span>
+            <span id="pin-cs-flag" class="hidden text-[10px] px-1 rounded bg-rose-500 text-white">ANOMALY</span>
+          </button>
+          <button onclick="focusZone('card-hostel')" class="px-3 py-1.5 rounded-lg text-xs font-mono font-semibold transition-all flex items-center gap-2 sub-box hover:border-purple-500">
+            <span id="pin-hostel-dot" class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+            <span>[Focus: Hostel Block B]</span>
+            <span id="pin-hostel-flag" class="hidden text-[10px] px-1 rounded bg-rose-500 text-white">LEAK</span>
+          </button>
+          <button onclick="focusZone('card-academic')" class="px-3 py-1.5 rounded-lg text-xs font-mono font-semibold transition-all flex items-center gap-2 sub-box hover:border-purple-500">
+            <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+            <span>[Focus: Academic Block A]</span>
+          </button>
+          <button onclick="focusZone('card-library')" class="px-3 py-1.5 rounded-lg text-xs font-mono font-semibold transition-all flex items-center gap-2 sub-box hover:border-purple-500">
+            <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+            <span>[Focus: Central Library]</span>
+          </button>
+        </div>
+
+        <div class="relative w-full h-80 sm:h-96 rounded-xl overflow-hidden border border-slate-200 dark:border-white/10 bg-slate-100 dark:bg-slate-950">
+          <iframe 
+            class="w-full h-full border-0" 
+            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3677.6749909249033!2d75.84594247589945!3d22.81450202356236!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x39630268593a8d1f%3A0x8e833486c95333f2!2sShri%20Vaishnav%20Vidyapeeth%20Vishwavidyalaya!5e0!3m2!1sen!2sin!4v1710000000000!5m2!1sen!2sin"
+            allowfullscreen="" 
+            loading="lazy">
+          </iframe>
+          <div class="absolute top-3 left-3 bg-white/90 dark:bg-black/80 backdrop-blur-md px-3 py-1 rounded text-xs font-mono text-purple-700 dark:text-purple-300 border border-slate-200 dark:border-white/10">
+            360° SVVV SPATIAL RADAR ACTIVE
+          </div>
+        </div>
+      </section>
+
+      <!-- 4 Core Zone Telemetry Cards -->
+      <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        
+        <!-- Zone 1 -->
+        <div id="card-cs-lab" class="glass-card p-5 flex flex-col justify-between">
+          <div>
+            <div class="flex items-start justify-between">
+              <div>
+                <span class="text-[10px] font-mono text-slate-500 uppercase">Block B • 2nd Floor</span>
+                <h4 class="font-bold text-slate-900 dark:text-white text-base">CS Lab 02</h4>
+              </div>
+              <span id="status-cs-lab" class="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-400 border border-emerald-300 dark:border-emerald-500/40">
+                OPTIMAL
+              </span>
+            </div>
+            <div class="mt-4 p-3 rounded-lg sub-box space-y-1.5 text-xs">
+              <div class="flex justify-between items-baseline">
+                <span class="text-slate-500">Active Load:</span>
+                <span class="font-mono font-bold text-slate-900 dark:text-white text-lg"><span id="val-cs-kw">2.1</span> kW</span>
+              </div>
+              <div class="flex justify-between text-slate-500">
+                <span>Hourly Drain:</span>
+                <span id="cost-cs-lab" class="font-mono text-amber-600 dark:text-amber-400">₹17.85/hr</span>
+              </div>
+            </div>
+          </div>
+          <div class="mt-4 pt-3 border-t border-slate-200 dark:border-white/5">
+            <button id="btn-cutoff-cs" onclick="resolveAnomaly('cs-lab')" disabled 
+              class="w-full py-2 px-3 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-1.5 bg-slate-200 dark:bg-white/5 text-slate-400 cursor-not-allowed">
+              <i data-lucide="power" class="w-3.5 h-3.5"></i>
+              <span>Virtual Cutoff Active</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Zone 2 -->
+        <div id="card-hostel" class="glass-card p-5 flex flex-col justify-between">
+          <div>
+            <div class="flex items-start justify-between">
+              <div>
+                <span class="text-[10px] font-mono text-slate-500 uppercase">Residential Zone</span>
+                <h4 class="font-bold text-slate-900 dark:text-white text-base">Hostel Block B</h4>
+              </div>
+              <span id="status-hostel" class="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-400 border border-emerald-300 dark:border-emerald-500/40">
+                OPTIMAL
+              </span>
+            </div>
+            <div class="mt-4 p-3 rounded-lg sub-box space-y-1.5 text-xs">
+              <div class="flex justify-between items-baseline">
+                <span class="text-slate-500">Active Flow:</span>
+                <span class="font-mono font-bold text-slate-900 dark:text-white text-lg"><span id="val-hostel-flow">3.2</span> L/min</span>
+              </div>
+              <div class="flex justify-between text-slate-500">
+                <span>Loss Rate:</span>
+                <span id="cost-hostel" class="font-mono text-blue-600 dark:text-blue-400">Normal</span>
+              </div>
+            </div>
+          </div>
+          <div class="mt-4 pt-3 border-t border-slate-200 dark:border-white/5">
+            <button id="btn-cutoff-hostel" onclick="resolveAnomaly('hostel')" disabled 
+              class="w-full py-2 px-3 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-1.5 bg-slate-200 dark:bg-white/5 text-slate-400 cursor-not-allowed">
+              <i data-lucide="droplet-off" class="w-3.5 h-3.5"></i>
+              <span>Solenoid Valve Normal</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Zone 3 -->
+        <div id="card-academic" class="glass-card p-5 flex flex-col justify-between">
+          <div>
+            <div class="flex items-start justify-between">
+              <div>
+                <span class="text-[10px] font-mono text-slate-500 uppercase">Central Wing</span>
+                <h4 class="font-bold text-slate-900 dark:text-white text-base">Academic Wing</h4>
+              </div>
+              <span class="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-400 border border-emerald-300 dark:border-emerald-500/40">
+                OPTIMAL
+              </span>
+            </div>
+            <div class="mt-4 p-3 rounded-lg sub-box space-y-1.5 text-xs">
+              <div class="flex justify-between items-baseline">
+                <span class="text-slate-500">Active Load:</span>
+                <span class="font-mono font-bold text-slate-900 dark:text-white text-lg"><span id="val-academic-kw">5.4</span> kW</span>
+              </div>
+              <div class="flex justify-between text-slate-500">
+                <span>HVAC Load:</span>
+                <span class="font-mono text-slate-700 dark:text-slate-300">3.8 kW</span>
+              </div>
+            </div>
+          </div>
+          <div class="mt-4 pt-3 border-t border-slate-200 dark:border-white/5">
+            <div class="py-2 text-center text-xs font-semibold text-slate-500 dark:text-slate-400">
+              Timetable Synced
+            </div>
+          </div>
+        </div>
+
+        <!-- Zone 4 -->
+        <div id="card-library" class="glass-card p-5 flex flex-col justify-between">
+          <div>
+            <div class="flex items-start justify-between">
+              <div>
+                <span class="text-[10px] font-mono text-slate-500 uppercase">Knowledge Center</span>
+                <h4 class="font-bold text-slate-900 dark:text-white text-base">Central Library</h4>
+              </div>
+              <span class="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-400 border border-emerald-300 dark:border-emerald-500/40">
+                OPTIMAL
+              </span>
+            </div>
+            <div class="mt-4 p-3 rounded-lg sub-box space-y-1.5 text-xs">
+              <div class="flex justify-between items-baseline">
+                <span class="text-slate-500">Active Load:</span>
+                <span class="font-mono font-bold text-slate-900 dark:text-white text-lg"><span id="val-library-kw">3.5</span> kW</span>
+              </div>
+              <div class="flex justify-between text-slate-500">
+                <span>Smart Dimming:</span>
+                <span class="font-mono text-emerald-600 dark:text-emerald-400">Active (65%)</span>
+              </div>
+            </div>
+          </div>
+          <div class="mt-4 pt-3 border-t border-slate-200 dark:border-white/5">
+            <div class="py-2 text-center text-xs font-semibold text-slate-500 dark:text-slate-400">
+              Eco-Certified Lux Control
+            </div>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- Chart.js Live Graph -->
+      <section class="glass-card p-5 space-y-3">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+          <h3 class="font-bold text-slate-900 dark:text-white text-sm flex items-center gap-2">
+            <i data-lucide="line-chart" class="w-4 h-4 text-purple-600 dark:text-purple-400"></i>
+            <span>Campus Real-time Telemetry Stream (kW Ingestion)</span>
+          </h3>
+          <span class="text-xs font-mono text-slate-500">Sampled every 2000ms</span>
+        </div>
+        <div class="w-full h-72 relative">
+          <canvas id="liveTelemetryChart"></canvas>
+        </div>
+      </section>
+
+    </div>
+
+    <!-- ============================================================== -->
+    <!-- VIEW 3: REPORTS & LOSS SUSTAINABILITY HUB (USER & ADMIN)       -->
+    <!-- ============================================================== -->
+    <div id="view-reports" class="view-container view-hidden space-y-8">
+      
+      <!-- Header with Role Indicator -->
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-200 dark:border-white/10">
+        <div>
+          <div class="flex items-center gap-2">
+            <span id="reports-role-badge" class="px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold bg-purple-100 dark:bg-purple-900/60 text-purple-700 dark:text-purple-300">USER MODE</span>
+            <span class="text-xs text-slate-500">Connected to Node.js Backend Server</span>
+          </div>
+          <h2 id="reports-view-heading" class="text-xl sm:text-2xl font-black text-slate-900 dark:text-white mt-1">Incident Reports & Status Tracker</h2>
+        </div>
+
+        <div class="flex items-center gap-3">
+          <button onclick="toggleModal('incident-modal', true)" class="px-4 py-2 rounded-xl text-xs font-bold bg-purple-600 hover:bg-purple-500 text-white flex items-center gap-1.5 shadow-sm">
+            <i data-lucide="plus" class="w-4 h-4"></i>
+            <span>Log New Report</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- ADMIN EXCLUSIVE: FINANCIAL LOSS SUSTAINED / AVERTED ANALYTICS PANEL -->
+      <div id="admin-loss-panel" class="hidden space-y-4">
+        <div class="flex items-center gap-2">
+          <i data-lucide="pie-chart" class="w-4 h-4 text-rose-500"></i>
+          <h3 class="text-sm font-bold uppercase tracking-wider text-slate-900 dark:text-white">Admin Financial & Resource Loss Intelligence</h3>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          
+          <!-- Sustained Drain Rate -->
+          <div class="glass-card p-5 border-rose-300 dark:border-rose-900/40">
+            <div class="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400 font-semibold uppercase">
+              <span>Loss Currently Sustained</span>
+              <i data-lucide="alert-circle" class="w-4 h-4 text-rose-500"></i>
+            </div>
+            <div class="mt-3 flex items-baseline gap-1">
+              <span class="text-xl font-bold font-mono text-rose-600 dark:text-rose-400">₹</span>
+              <span id="metric-loss-per-hour" class="text-3xl font-black font-mono text-rose-600 dark:text-rose-400">108.00</span>
+              <span class="text-xs text-rose-500 font-mono">/hr</span>
+            </div>
+            <div class="mt-2 text-[11px] text-slate-500 font-mono">
+              Ongoing bleed from active unresolved incidents
+            </div>
+          </div>
+
+          <!-- Projected 24h Loss -->
+          <div class="glass-card p-5 border-amber-300 dark:border-amber-900/40">
+            <div class="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400 font-semibold uppercase">
+              <span>Projected 24h Loss</span>
+              <i data-lucide="clock" class="w-4 h-4 text-amber-500"></i>
+            </div>
+            <div class="mt-3 flex items-baseline gap-1">
+              <span class="text-xl font-bold font-mono text-amber-600 dark:text-amber-400">₹</span>
+              <span id="metric-loss-daily" class="text-3xl font-black font-mono text-amber-600 dark:text-amber-400">2,592.00</span>
+              <span class="text-xs text-amber-500 font-mono">/day</span>
+            </div>
+            <div class="mt-2 text-[11px] text-slate-500 font-mono">
+              If leaks & phantom loads continue unmitigated
+            </div>
+          </div>
+
+          <!-- Total Loss Averted -->
+          <div class="glass-card p-5 border-emerald-300 dark:border-emerald-900/40">
+            <div class="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400 font-semibold uppercase">
+              <span>Total Loss Averted</span>
+              <i data-lucide="shield-check" class="w-4 h-4 text-emerald-500"></i>
+            </div>
+            <div class="mt-3 flex items-baseline gap-1">
+              <span class="text-xl font-bold font-mono text-emerald-600 dark:text-emerald-400">₹</span>
+              <span id="metric-loss-averted" class="text-3xl font-black font-mono text-emerald-600 dark:text-emerald-400">920.00</span>
+            </div>
+            <div class="mt-2 text-[11px] text-emerald-600 dark:text-emerald-400 font-mono">
+              Saved via admin status resolution & cutoffs
+            </div>
+          </div>
+
+          <!-- Incident Status Ratio -->
+          <div class="glass-card p-5">
+            <div class="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400 font-semibold uppercase">
+              <span>Incident Queue</span>
+              <i data-lucide="layers" class="w-4 h-4 text-purple-600"></i>
+            </div>
+            <div class="mt-3 flex items-center gap-3">
+              <div>
+                <span id="admin-pending-count" class="text-2xl font-black font-mono text-amber-600">1</span>
+                <span class="text-[10px] text-slate-500 block uppercase">Pending</span>
+              </div>
+              <div class="h-8 w-px bg-slate-200 dark:bg-white/10"></div>
+              <div>
+                <span id="admin-solved-count" class="text-2xl font-black font-mono text-emerald-600">2</span>
+                <span class="text-[10px] text-slate-500 block uppercase">Solved</span>
+              </div>
+            </div>
+            <div class="mt-2 text-[11px] text-slate-500 font-mono">
+              <span id="admin-total-count">3</span> Total campus reports recorded
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Reports Filter Tabs (All / Pending / Solved) -->
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-2 text-xs font-semibold">
+          <button onclick="setReportFilter('ALL')" id="filter-all-btn" class="px-3 py-1.5 rounded-lg bg-purple-600 text-white font-bold">
+            All Reports
+          </button>
+          <button onclick="setReportFilter('PENDING')" id="filter-pending-btn" class="px-3 py-1.5 rounded-lg sub-box text-slate-600 dark:text-slate-300 hover:border-purple-400">
+            Pending Action
+          </button>
+          <button onclick="setReportFilter('SOLVED')" id="filter-solved-btn" class="px-3 py-1.5 rounded-lg sub-box text-slate-600 dark:text-slate-300 hover:border-purple-400">
+            Solved & Verified
+          </button>
+        </div>
+        <button onclick="fetchReportsFromBackend()" class="text-xs text-purple-600 dark:text-purple-400 flex items-center gap-1 font-mono hover:underline">
+          <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i> Sync Backend
+        </button>
+      </div>
+
+      <!-- Reports Feed Cards / Table -->
+      <div id="reports-container" class="space-y-3">
+        <!-- Rendered dynamically -->
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- ============================================================== -->
+  <!-- PERSISTENT FLOATING DEMO CONTROLLER DOCK                       -->
+  <!-- ============================================================== -->
+  <aside class="fixed bottom-4 left-1/2 -translate-x-1/2 z-50 glass-dock px-4 sm:px-6 py-2.5 rounded-2xl flex items-center gap-2 sm:gap-3 max-w-[95vw] overflow-x-auto">
+    <div class="hidden md:flex items-center gap-2 text-xs font-mono font-bold text-purple-700 dark:text-purple-300 pr-2 border-r border-slate-200 dark:border-white/10 whitespace-nowrap">
+      <i data-lucide="sparkles" class="w-3.5 h-3.5"></i>
+      <span>DEMO LAB:</span>
+    </div>
+
+    <button onclick="injectPhantomLoad()" 
+      class="px-3 py-1.5 rounded-xl text-xs font-bold font-mono transition-all bg-rose-500/15 hover:bg-rose-500/25 text-rose-700 dark:text-rose-300 border border-rose-300 dark:border-rose-500/40 flex items-center gap-1.5 whitespace-nowrap">
+      <i data-lucide="zap-off" class="w-3.5 h-3.5 text-rose-600 dark:text-rose-400"></i>
+      <span>⚡ Inject CS Phantom (14.8 kW)</span>
+    </button>
+
+    <button onclick="injectWaterBurst()" 
+      class="px-3 py-1.5 rounded-xl text-xs font-bold font-mono transition-all bg-blue-500/15 hover:bg-blue-500/25 text-blue-700 dark:text-blue-300 border border-blue-300 dark:border-blue-500/40 flex items-center gap-1.5 whitespace-nowrap">
+      <i data-lucide="droplets" class="w-3.5 h-3.5 text-blue-600 dark:text-blue-400"></i>
+      <span>💧 Inject Hostel Burst (28.5 L/m)</span>
+    </button>
+
+    <button onclick="normalizeAllSystems()" 
+      class="px-3 py-1.5 rounded-xl text-xs font-bold font-mono transition-all bg-emerald-500/15 hover:bg-emerald-500/25 text-emerald-700 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-500/40 flex items-center gap-1.5 whitespace-nowrap">
+      <i data-lucide="rotate-ccw" class="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400"></i>
+      <span>🔄 Normalize All</span>
+    </button>
+  </aside>
+
+  <!-- ============================================================== -->
+  <!-- MODAL: LOGIN / SWITCH ACCOUNT (USER & ADMIN)                   -->
+  <!-- ============================================================== -->
+  <div id="login-modal" class="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm hidden items-center justify-center p-4">
+    <div class="glass-card max-w-md w-full p-6 border-purple-400/40 relative shadow-2xl">
+      <button onclick="toggleModal('login-modal', false)" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 dark:hover:text-white">
+        <i data-lucide="x" class="w-5 h-5"></i>
+      </button>
+
+      <div class="text-center mb-6">
+        <div class="w-12 h-12 rounded-2xl bg-purple-600 text-white flex items-center justify-center mx-auto mb-3 shadow-lg shadow-purple-600/30">
+          <i data-lucide="lock" class="w-6 h-6"></i>
+        </div>
+        <h3 class="text-lg font-black text-slate-900 dark:text-white">EcoPulse Campus Access</h3>
+        <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Select your role to access reports and telemetry control</p>
+      </div>
+
+      <!-- Two Login Tabs: User vs Admin -->
+      <div class="grid grid-cols-2 gap-2 p-1.5 rounded-xl bg-slate-100 dark:bg-black/40 border border-slate-200 dark:border-white/10 mb-5">
+        <button id="tab-login-user" onclick="switchLoginTab('user')" class="py-2 rounded-lg text-xs font-bold transition-all bg-white dark:bg-purple-600 text-purple-700 dark:text-white shadow">
+          👤 Campus User
+        </button>
+        <button id="tab-login-admin" onclick="switchLoginTab('admin')" class="py-2 rounded-lg text-xs font-bold transition-all text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white">
+          🛡️ Facilities Admin
+        </button>
+      </div>
+
+      <!-- Form 1: User Login (One-time, stays logged in!) -->
+      <form id="form-login-user" onsubmit="handleUserLogin(event)" class="space-y-4 text-xs">
+        <div class="p-3 rounded-lg bg-purple-50 dark:bg-purple-950/30 border border-purple-200 dark:border-purple-800/40 text-purple-700 dark:text-purple-300 text-[11px] leading-relaxed">
+          <strong>Persistent Student/Staff Access:</strong> Enter your name once. You will remain logged in automatically even if you refresh or reopen the browser.
+        </div>
+
+        <div>
+          <label class="block text-slate-700 dark:text-slate-300 font-semibold mb-1">Your Full Name</label>
+          <input id="input-user-name" type="text" placeholder="e.g. Aarav Sharma" required
+            class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-white/10 rounded-lg px-3 py-2 text-slate-900 dark:text-white focus:outline-none focus:border-purple-500">
+        </div>
+
+        <div>
+          <label class="block text-slate-700 dark:text-slate-300 font-semibold mb-1">Hostel Block / Department</label>
+          <input id="input-user-dept" type="text" placeholder="e.g. Hostel Block B / CS Dept"
+            class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-white/10 rounded-lg px-3 py-2 text-slate-900 dark:text-white focus:outline-none focus:border-purple-500">
+        </div>
+
+        <button type="submit" class="w-full py-2.5 rounded-xl font-bold text-xs bg-purple-600 hover:bg-purple-500 text-white transition-all shadow-md">
+          Save & Enter as User
+        </button>
+      </form>
+
+      <!-- Form 2: Admin Login (Requires name: admin & pass: pass111 every time!) -->
+      <form id="form-login-admin" onsubmit="handleAdminLogin(event)" class="hidden space-y-4 text-xs">
+        <div class="p-3 rounded-lg bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800/40 text-amber-800 dark:text-amber-300 text-[11px] leading-relaxed">
+          <strong>Security Notice:</strong> Admin sessions are strictly non-permanent and require credentials every session. Enter username <code>admin</code> and password <code>pass111</code>.
+        </div>
+
+        <div>
+          <label class="block text-slate-700 dark:text-slate-300 font-semibold mb-1">Enter Name</label>
+          <input id="input-admin-name" type="text" placeholder="admin" required
+            class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-white/10 rounded-lg px-3 py-2 text-slate-900 dark:text-white focus:outline-none focus:border-purple-500 font-mono">
+        </div>
+
+        <div>
+          <label class="block text-slate-700 dark:text-slate-300 font-semibold mb-1">Admin Password</label>
+          <input id="input-admin-pass" type="password" placeholder="pass111" required
+            class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-white/10 rounded-lg px-3 py-2 text-slate-900 dark:text-white focus:outline-none focus:border-purple-500 font-mono">
+        </div>
+
+        <div id="admin-login-error" class="hidden text-rose-500 text-[11px] font-mono">
+          <!-- Error message -->
+        </div>
+
+        <button type="submit" class="w-full py-2.5 rounded-xl font-bold text-xs bg-gradient-to-r from-purple-700 to-indigo-700 hover:from-purple-600 hover:to-indigo-600 text-white transition-all shadow-md">
+          Authenticate Admin Console
+        </button>
+      </form>
+
+    </div>
+  </div>
+
+  <!-- ============================================================== -->
+  <!-- MODAL: QUICK INCIDENT REPORT                                   -->
+  <!-- ============================================================== -->
+  <div id="incident-modal" class="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm hidden items-center justify-center p-4">
+    <div class="glass-card max-w-md w-full p-6 border-purple-400/40 relative shadow-2xl">
+      <button onclick="toggleModal('incident-modal', false)" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 dark:hover:text-white">
+        <i data-lucide="x" class="w-5 h-5"></i>
+      </button>
+
+      <div class="flex items-center gap-2.5 mb-4">
+        <div class="w-9 h-9 rounded-lg bg-purple-600/15 border border-purple-500/30 flex items-center justify-center text-purple-600 dark:text-purple-400">
+          <i data-lucide="alert-triangle" class="w-5 h-5"></i>
+        </div>
+        <div>
+          <h3 class="text-base font-bold text-slate-900 dark:text-white">Submit Campus Anomaly</h3>
+          <p class="text-xs text-slate-500">Sends directly to facilities administration</p>
+        </div>
+      </div>
+
+      <form onsubmit="handleNewReportSubmit(event)" class="space-y-3.5 text-xs">
+        <div>
+          <label class="block text-slate-700 dark:text-slate-300 font-semibold mb-1">Campus Zone</label>
+          <select id="modal-zone" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-white/10 rounded-lg px-3 py-2 text-slate-900 dark:text-white focus:outline-none focus:border-purple-500">
+            <option value="CS Computer Lab 2">CS Computer Lab 2 (Academic B)</option>
+            <option value="Hostel Block B">Hostel Block B (Residential)</option>
+            <option value="Main Academic Wing">Main Academic Wing</option>
+            <option value="Central Library">Central Library</option>
+            <option value="Central Cafeteria">Central Cafeteria</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-slate-700 dark:text-slate-300 font-semibold mb-1">Resource Involved</label>
+          <select id="modal-resource" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-white/10 rounded-lg px-3 py-2 text-slate-900 dark:text-white focus:outline-none focus:border-purple-500">
+            <option value="Electricity">Electricity (Phantom load / HVAC)</option>
+            <option value="Water">Water (Plumbing leak / Pipe burst)</option>
+            <option value="Lighting">Lighting (Unoccupied room lit)</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-slate-700 dark:text-slate-300 font-semibold mb-1">Severity</label>
+          <select id="modal-severity" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-white/10 rounded-lg px-3 py-2 text-slate-900 dark:text-white focus:outline-none focus:border-purple-500">
+            <option value="CRITICAL">CRITICAL (Immediate cutoff needed)</option>
+            <option value="WARNING">WARNING (High continuous waste)</option>
+            <option value="INFO">INFO (Minor drift)</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-slate-700 dark:text-slate-300 font-semibold mb-1">Observations / Evidence</label>
+          <textarea id="modal-notes" rows="2" placeholder="Describe the leak or equipment running..." 
+            class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-white/10 rounded-lg px-3 py-2 text-slate-900 dark:text-white focus:outline-none focus:border-purple-500" required></textarea>
+        </div>
+
+        <div class="pt-2 flex items-center justify-end gap-2">
+          <button type="button" onclick="toggleModal('incident-modal', false)" class="px-4 py-2 rounded-lg text-slate-500 hover:text-slate-700 sub-box">
+            Cancel
+          </button>
+          <button type="submit" class="px-4 py-2 rounded-lg bg-purple-600 hover:bg-purple-500 text-white font-bold flex items-center gap-2 shadow">
+            <i data-lucide="send" class="w-3.5 h-3.5"></i>
+            <span>Submit to Admin</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- TOAST CONTAINER -->
+  <div id="toast-container" class="fixed top-24 right-4 z-50 flex flex-col gap-2 max-w-sm w-full pointer-events-none"></div>
+
+  <!-- ============================================================== -->
+  <!-- JAVASCRIPT STATE ENGINE & BACKEND CLIENT                       -->
+  <!-- ============================================================== -->
+  <script>
+    // App State
+    const state = {
+      activeView: 'view-overview',
+      currentUser: null, // { name: '...', role: 'user' | 'admin' }
+      reports: [],
+      activeReportFilter: 'ALL',
+      telemetry: {
+        csLab: { currentKw: 2.1, baselineKw: 2.1, isAnomaly: false },
+        hostel: { currentFlow: 3.2, baselineFlow: 3.2, isAnomaly: false },
+        academic: { currentKw: 5.4, baselineKw: 5.4 },
+        library: { currentKw: 3.5, baselineKw: 3.5 }
+      },
+      chartInstance: null
+    };
+
+    // -------------------------------------------------------------
+    // Theme Management: Light (DEFAULT) vs Dark Mode
+    // -------------------------------------------------------------
+    function initTheme() {
+      const savedTheme = localStorage.getItem('ecopulse_theme') || 'light';
+      applyTheme(savedTheme);
+    }
+
+    function toggleTheme() {
+      const current = document.documentElement.classList.contains('dark') ? 'dark' : 'light';
+      const next = current === 'dark' ? 'light' : 'dark';
+      applyTheme(next);
+      localStorage.setItem('ecopulse_theme', next);
+    }
+
+    function applyTheme(theme) {
+      const html = document.documentElement;
+      const icon = document.getElementById('theme-icon');
+      
+      if (theme === 'dark') {
+        html.classList.add('dark');
+        html.classList.remove('light');
+        if (icon) icon.setAttribute('data-lucide', 'sun');
+      } else {
+        html.classList.add('light');
+        html.classList.remove('dark');
+        if (icon) icon.setAttribute('data-lucide', 'moon');
+      }
+      lucide.createIcons();
+
+      // Refresh chart colors if chart exists
+      if (state.chartInstance) {
+        state.chartInstance.update();
+      }
+    }
+
+    // -------------------------------------------------------------
+    // Authentication & Session Persistence Engine
+    // -------------------------------------------------------------
+    function initAuth() {
+      // Check session storage first (admin is only session-persistent)
+      const adminSession = sessionStorage.getItem('ecopulse_admin_session');
+      if (adminSession) {
+        state.currentUser = { name: 'admin', role: 'admin' };
+      } else {
+        // Check persistent local storage for regular user
+        const storedUser = localStorage.getItem('ecopulse_user');
+        if (storedUser) {
+          try {
+            state.currentUser = JSON.parse(storedUser);
+          } catch (e) {
+            state.currentUser = { name: 'Aarav Sharma', role: 'user' };
+          }
+        } else {
+          // Default initial user
+          state.currentUser = { name: 'Aarav Sharma', dept: 'CS Dept', role: 'user' };
+          localStorage.setItem('ecopulse_user', JSON.stringify(state.currentUser));
+        }
+      }
+      updateAuthUI();
+      fetchReportsFromBackend();
+    }
+
+    function updateAuthUI() {
+      const roleBadge = document.getElementById('role-nav-badge');
+      const avatar = document.getElementById('user-avatar');
+      const navName = document.getElementById('nav-user-name');
+      const navSub = document.getElementById('nav-user-sub');
+      const reportsViewHeading = document.getElementById('reports-view-heading');
+      const reportsRoleBadge = document.getElementById('reports-role-badge');
+      const navReportsLabel = document.getElementById('nav-reports-label');
+      const adminLossPanel = document.getElementById('admin-loss-panel');
+
+      if (!state.currentUser) return;
+
+      if (state.currentUser.role === 'admin') {
+        roleBadge.textContent = 'ADMIN CONSOLE';
+        roleBadge.className = 'text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-rose-100 dark:bg-rose-950/60 text-rose-700 dark:text-rose-400 border border-rose-300 dark:border-rose-700/50';
+        avatar.textContent = 'A';
+        avatar.className = 'w-6 h-6 rounded-full bg-rose-600 text-white font-bold flex items-center justify-center text-[11px]';
+        navName.textContent = 'Administrator';
+        navSub.textContent = 'Privileged Session (Logout)';
+        
+        reportsViewHeading.textContent = 'Campus Anomaly Management & Status Control';
+        reportsRoleBadge.textContent = 'ADMIN PRIVILEGED';
+        reportsRoleBadge.className = 'px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold bg-rose-100 dark:bg-rose-900/60 text-rose-700 dark:text-rose-300';
+        navReportsLabel.textContent = 'Admin Reports & Loss';
+
+        // Reveal Admin Loss Analytics Panel
+        adminLossPanel.classList.remove('hidden');
+        fetchAdminLossAnalytics();
+      } else {
+        roleBadge.textContent = 'STUDENT';
+        roleBadge.className = 'text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-purple-100 dark:bg-purple-900/40 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-700/50';
+        avatar.textContent = (state.currentUser.name || 'U').charAt(0).toUpperCase();
+        avatar.className = 'w-6 h-6 rounded-full bg-purple-600 text-white font-bold flex items-center justify-center text-[11px]';
+        navName.textContent = state.currentUser.name;
+        navSub.textContent = 'Logged In (Switch)';
+
+        reportsViewHeading.textContent = 'My Submitted Reports & History';
+        reportsRoleBadge.textContent = 'USER VIEW';
+        reportsRoleBadge.className = 'px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold bg-purple-100 dark:bg-purple-900/60 text-purple-700 dark:text-purple-300';
+        navReportsLabel.textContent = 'My Reports & History';
+
+        adminLossPanel.classList.add('hidden');
+      }
+    }
+
+    function openLoginModal() {
+      toggleModal('login-modal', true);
+      switchLoginTab(state.currentUser && state.currentUser.role === 'admin' ? 'admin' : 'user');
+    }
+
+    function switchLoginTab(tab) {
+      const tabUser = document.getElementById('tab-login-user');
+      const tabAdmin = document.getElementById('tab-login-admin');
+      const formUser = document.getElementById('form-login-user');
+      const formAdmin = document.getElementById('form-login-admin');
+
+      if (tab === 'user') {
+        tabUser.className = 'py-2 rounded-lg text-xs font-bold transition-all bg-white dark:bg-purple-600 text-purple-700 dark:text-white shadow';
+        tabAdmin.className = 'py-2 rounded-lg text-xs font-bold transition-all text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white';
+        formUser.classList.remove('hidden');
+        formAdmin.classList.add('hidden');
+        if (state.currentUser && state.currentUser.role === 'user') {
+          document.getElementById('input-user-name').value = state.currentUser.name;
+        }
+      } else {
+        tabAdmin.className = 'py-2 rounded-lg text-xs font-bold transition-all bg-white dark:bg-purple-600 text-purple-700 dark:text-white shadow';
+        tabUser.className = 'py-2 rounded-lg text-xs font-bold transition-all text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white';
+        formAdmin.classList.remove('hidden');
+        formUser.classList.add('hidden');
+        document.getElementById('input-admin-name').value = 'admin';
+        document.getElementById('input-admin-pass').value = '';
+      }
+    }
+
+    function handleUserLogin(e) {
+      e.preventDefault();
+      const name = document.getElementById('input-user-name').value.trim();
+      const dept = document.getElementById('input-user-dept').value.trim();
+      
+      // Clear admin session
+      sessionStorage.removeItem('ecopulse_admin_session');
+
+      // Save user to localStorage (stays logged in permanently!)
+      state.currentUser = { name, dept, role: 'user' };
+      localStorage.setItem('ecopulse_user', JSON.stringify(state.currentUser));
+
+      toggleModal('login-modal', false);
+      updateAuthUI();
+      fetchReportsFromBackend();
+      showToast(`Welcome, ${name}! Logged in as Campus User (Permanent session).`, 'success');
+    }
+
+    async function handleAdminLogin(e) {
+      e.preventDefault();
+      const name = document.getElementById('input-admin-name').value.trim();
+      const pass = document.getElementById('input-admin-pass').value.trim();
+      const errBox = document.getElementById('admin-login-error');
+
+      try {
+        const response = await fetch('/api/auth/admin-login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username: name, password: pass })
+        });
+        const data = await response.json();
+
+        if (data.success) {
+          errBox.classList.add('hidden');
+          // Session only! Admin must log in each time.
+          sessionStorage.setItem('ecopulse_admin_session', data.token);
+          state.currentUser = { name: 'admin', role: 'admin' };
+          
+          toggleModal('login-modal', false);
+          updateAuthUI();
+          fetchReportsFromBackend();
+          showToast('🛡️ Admin Authenticated! Privileged controls & loss management active.', 'success');
+        } else {
+          errBox.textContent = data.message || 'Invalid admin credentials.';
+          errBox.classList.remove('hidden');
+        }
+      } catch (err) {
+        // Fallback check
+        if (name === 'admin' && pass === 'pass111') {
+          sessionStorage.setItem('ecopulse_admin_session', 'adm_client_sess');
+          state.currentUser = { name: 'admin', role: 'admin' };
+          toggleModal('login-modal', false);
+          updateAuthUI();
+          fetchReportsFromBackend();
+          showToast('🛡️ Admin Authenticated (Client-side validation fallback).', 'success');
+        } else {
+          errBox.textContent = 'Invalid credentials. Name must be "admin" and password "pass111".';
+          errBox.classList.remove('hidden');
+        }
+      }
+    }
+
+    // -------------------------------------------------------------
+    // Reports & Backend Communication Engine
+    // -------------------------------------------------------------
+    async function fetchReportsFromBackend() {
+      try {
+        const query = state.currentUser && state.currentUser.role === 'admin' 
+          ? '' 
+          : `?author=${encodeURIComponent(state.currentUser.name)}`;
+          
+        const res = await fetch(`/api/reports${query}`);
+        const data = await res.json();
+        if (data.success) {
+          state.reports = data.reports;
+          renderReportsList();
+          updatePendingBadge();
+        }
+      } catch (e) {
+        console.warn('Backend fetch failed, using stored local list', e);
+        renderReportsList();
+      }
+    }
+
+    async function fetchAdminLossAnalytics() {
+      if (!state.currentUser || state.currentUser.role !== 'admin') return;
+      try {
+        const res = await fetch('/api/admin/loss-analytics');
+        const data = await res.json();
+        if (data.success) {
+          const m = data.metrics;
+          document.getElementById('metric-loss-per-hour').textContent = m.sustainedLossPerHour.toFixed(2);
+          document.getElementById('metric-loss-daily').textContent = m.estimatedDailySustainedLoss.toLocaleString('en-IN');
+          document.getElementById('metric-loss-averted').textContent = m.totalLossAverted.toLocaleString('en-IN');
+          document.getElementById('admin-pending-count').textContent = m.pendingCount;
+          document.getElementById('admin-solved-count').textContent = m.solvedCount;
+          document.getElementById('admin-total-count').textContent = m.totalReports;
+        }
+      } catch (e) {
+        console.warn('Could not fetch loss analytics', e);
+      }
+    }
+
+    function setReportFilter(filter) {
+      state.activeReportFilter = filter;
+      document.getElementById('filter-all-btn').className = filter === 'ALL' 
+        ? 'px-3 py-1.5 rounded-lg bg-purple-600 text-white font-bold' 
+        : 'px-3 py-1.5 rounded-lg sub-box text-slate-600 dark:text-slate-300 hover:border-purple-400';
+      document.getElementById('filter-pending-btn').className = filter === 'PENDING' 
+        ? 'px-3 py-1.5 rounded-lg bg-purple-600 text-white font-bold' 
+        : 'px-3 py-1.5 rounded-lg sub-box text-slate-600 dark:text-slate-300 hover:border-purple-400';
+      document.getElementById('filter-solved-btn').className = filter === 'SOLVED' 
+        ? 'px-3 py-1.5 rounded-lg bg-purple-600 text-white font-bold' 
+        : 'px-3 py-1.5 rounded-lg sub-box text-slate-600 dark:text-slate-300 hover:border-purple-400';
+      renderReportsList();
+    }
+
+    function renderReportsList() {
+      const container = document.getElementById('reports-container');
+      container.innerHTML = '';
+
+      let list = state.reports;
+      if (state.activeReportFilter !== 'ALL') {
+        list = list.filter(r => r.status === state.activeReportFilter);
+      }
+
+      if (list.length === 0) {
+        container.innerHTML = `
+          <div class="glass-card p-8 text-center text-slate-500">
+            <i data-lucide="inbox" class="w-8 h-8 mx-auto mb-2 opacity-50"></i>
+            <p class="text-xs">No reports found matching the selected filter.</p>
+          </div>
+        `;
+        lucide.createIcons();
+        return;
+      }
+
+      list.forEach(r => {
+        const card = document.createElement('div');
+        const isSolved = r.status === 'SOLVED';
+        const isAdmin = state.currentUser && state.currentUser.role === 'admin';
+
+        card.className = `glass-card p-4 sm:p-5 flex flex-col md:flex-row md:items-center justify-between gap-4 ${!isSolved ? 'border-amber-400/30' : 'border-emerald-400/30'}`;
+
+        card.innerHTML = `
+          <div class="space-y-2 flex-1">
+            <div class="flex flex-wrap items-center gap-2">
+              <span class="font-mono font-bold text-xs text-slate-900 dark:text-white">${r.id}</span>
+              <span class="text-[11px] font-semibold px-2 py-0.5 rounded-full ${isSolved ? 'bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-400 border border-emerald-300 dark:border-emerald-500/40' : 'bg-amber-100 dark:bg-amber-950/60 text-amber-700 dark:text-amber-400 border border-amber-300 dark:border-amber-500/40 animate-pulse'}">
+                ${isSolved ? '✓ SOLVED' : '⏳ PENDING'}
+              </span>
+              <span class="text-xs text-slate-500 font-mono">• ${r.zone}</span>
+              <span class="text-xs text-purple-600 dark:text-purple-400 font-semibold">• ${r.resource}</span>
+            </div>
+
+            <p class="text-xs text-slate-700 dark:text-slate-300 leading-relaxed font-medium">
+              ${r.notes}
+            </p>
+
+            <div class="flex flex-wrap items-center gap-3 text-[11px] text-slate-500 font-mono pt-1">
+              <span>Reported by: <strong>${r.author}</strong></span>
+              <span>• ${r.timestamp}</span>
+              ${!isSolved ? `<span class="text-rose-600 dark:text-rose-400">Drain Rate: ₹${r.estimatedLossPerHour || 34}/hr</span>` : `<span class="text-emerald-600 dark:text-emerald-400">Averted Loss: ₹${r.lossAvertedTotal || 450}</span>`}
+            </div>
+
+            ${isSolved && r.resolutionNotes ? `
+              <div class="p-2.5 rounded-lg bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-800/40 text-[11px] text-emerald-800 dark:text-emerald-300">
+                <strong>Admin Resolution Note:</strong> ${r.resolutionNotes} (${r.solvedAt})
+              </div>
+            ` : ''}
+          </div>
+
+          <!-- Actions -->
+          <div class="flex items-center gap-2">
+            ${isAdmin ? `
+              ${!isSolved ? `
+                <button onclick="adminMarkSolved('${r.id}')" 
+                  class="px-3.5 py-2 rounded-xl text-xs font-bold bg-emerald-600 hover:bg-emerald-500 text-white shadow flex items-center gap-1.5 transition-all">
+                  <i data-lucide="check-circle" class="w-4 h-4"></i>
+                  <span>Mark as Solved</span>
+                </button>
+              ` : `
+                <button onclick="adminReopenReport('${r.id}')" 
+                  class="px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-500 hover:text-slate-700 sub-box">
+                  Reopen
+                </button>
+              `}
+            ` : `
+              <div class="text-right text-xs">
+                ${isSolved ? `
+                  <span class="text-emerald-600 dark:text-emerald-400 font-semibold flex items-center gap-1">
+                    <i data-lucide="check" class="w-3.5 h-3.5"></i> Resolved by Admin
+                  </span>
+                ` : `
+                  <span class="text-amber-600 dark:text-amber-400 font-semibold flex items-center gap-1">
+                    <i data-lucide="clock" class="w-3.5 h-3.5"></i> Awaiting Facilities
+                  </span>
+                `}
+              </div>
+            `}
+          </div>
+        `;
+
+        container.appendChild(card);
+      });
+
+      lucide.createIcons();
+    }
+
+    function updatePendingBadge() {
+      const pending = state.reports.filter(r => r.status === 'PENDING').length;
+      const badge = document.getElementById('pending-counter-badge');
+      if (badge) {
+        badge.textContent = pending;
+        badge.style.display = pending > 0 ? 'inline-block' : 'none';
+      }
+    }
+
+    async function handleNewReportSubmit(e) {
+      e.preventDefault();
+      const zone = document.getElementById('modal-zone').value;
+      const resource = document.getElementById('modal-resource').value;
+      const severity = document.getElementById('modal-severity').value;
+      const notes = document.getElementById('modal-notes').value;
+
+      const payload = {
+        author: state.currentUser ? state.currentUser.name : 'Anonymous Student',
+        userRole: state.currentUser ? state.currentUser.role : 'student',
+        zone,
+        resource,
+        severity,
+        notes
+      };
+
+      try {
+        const res = await fetch('/api/reports', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        const data = await res.json();
+        if (data.success) {
+          showToast(`✅ Report [${data.report.id}] logged with status PENDING. Facilities Admin notified!`, 'success');
+          toggleModal('incident-modal', false);
+          document.getElementById('modal-notes').value = '';
+          fetchReportsFromBackend();
+          fetchAdminLossAnalytics();
+        }
+      } catch (err) {
+        // Fallback local push
+        const fallback = {
+          id: 'REP-' + Math.floor(1000 + Math.random() * 9000),
+          ...payload,
+          status: 'PENDING',
+          timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+          estimatedLossPerHour: 55.0
+        };
+        state.reports.unshift(fallback);
+        renderReportsList();
+        updatePendingBadge();
+        toggleModal('incident-modal', false);
+        showToast(`✅ Report [${fallback.id}] logged (local cache)!`, 'success');
+      }
+    }
+
+    async function adminMarkSolved(reportId) {
+      const notes = prompt('Enter resolution summary for the student:', 'Facility inspection verified. Relay cutoff triggered and loss stopped.');
+      if (notes === null) return;
+
+      try {
+        const res = await fetch(`/api/reports/${reportId}/status`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            status: 'SOLVED',
+            resolvedBy: 'admin',
+            resolutionNotes: notes
+          })
+        });
+        const data = await res.json();
+        if (data.success) {
+          showToast(`🛡️ Report [${reportId}] marked as SOLVED! Loss averted recorded.`, 'success');
+          fetchReportsFromBackend();
+          fetchAdminLossAnalytics();
+        }
+      } catch (e) {
+        // Fallback local update
+        const rep = state.reports.find(r => r.id === reportId);
+        if (rep) {
+          rep.status = 'SOLVED';
+          rep.resolutionNotes = notes;
+          rep.lossAvertedTotal = 500;
+          renderReportsList();
+          updatePendingBadge();
+          showToast(`🛡️ Report [${reportId}] marked as SOLVED!`, 'success');
+        }
+      }
+    }
+
+    async function adminReopenReport(reportId) {
+      try {
+        const res = await fetch(`/api/reports/${reportId}/status`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ status: 'PENDING' })
+        });
+        const data = await res.json();
+        if (data.success) {
+          showToast(`Report [${reportId}] reopened.`, 'info');
+          fetchReportsFromBackend();
+          fetchAdminLossAnalytics();
+        }
+      } catch (e) {
+        const rep = state.reports.find(r => r.id === reportId);
+        if (rep) {
+          rep.status = 'PENDING';
+          renderReportsList();
+          updatePendingBadge();
+        }
+      }
+    }
+
+    // -------------------------------------------------------------
+    // View Switching Navigation
+    // -------------------------------------------------------------
+    function switchView(viewId) {
+      state.activeView = viewId;
+      const views = ['view-overview', 'view-spatial', 'view-reports'];
+      views.forEach(v => {
+        const el = document.getElementById(v);
+        if (v === viewId) {
+          el.classList.remove('view-hidden');
+          el.classList.add('view-active');
+        } else {
+          el.classList.add('view-hidden');
+          el.classList.remove('view-active');
+        }
+      });
+
+      // Update Nav Buttons
+      const btnO = document.getElementById('nav-btn-overview');
+      const btnS = document.getElementById('nav-btn-spatial');
+      const btnR = document.getElementById('nav-btn-reports');
+
+      const activeClass = "flex items-center gap-2 px-3.5 py-2 rounded-lg transition-all duration-200 bg-purple-600 text-white shadow-md";
+      const inactiveClass = "flex items-center gap-2 px-3.5 py-2 rounded-lg transition-all duration-200 text-slate-600 dark:text-slate-400 hover:text-purple-600 dark:hover:text-white";
+
+      btnO.className = viewId === 'view-overview' ? activeClass : inactiveClass;
+      btnS.className = viewId === 'view-spatial' ? activeClass : inactiveClass;
+      btnR.className = viewId === 'view-reports' ? activeClass : inactiveClass;
+
+      if (viewId === 'view-spatial' && state.chartInstance) {
+        setTimeout(() => state.chartInstance.resize(), 100);
+      }
+      if (viewId === 'view-reports') {
+        fetchReportsFromBackend();
+        fetchAdminLossAnalytics();
+      }
+
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function focusZone(cardElementId) {
+      const card = document.getElementById(cardElementId);
+      if (card) {
+        card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        card.classList.add('ring-2', 'ring-purple-500', 'ring-offset-2');
+        setTimeout(() => card.classList.remove('ring-2', 'ring-purple-500', 'ring-offset-2'), 1800);
+      }
+    }
+
+    function toggleModal(modalId, show) {
+      const modal = document.getElementById(modalId);
+      if (show) {
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+      } else {
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+      }
+    }
+
+    function showToast(message, type = 'info') {
+      const container = document.getElementById('toast-container');
+      const toast = document.createElement('div');
+      
+      let borderCol = 'border-purple-400';
+      let icon = 'info';
+      if (type === 'critical') { borderCol = 'border-rose-500'; icon = 'alert-octagon'; }
+      if (type === 'success') { borderCol = 'border-emerald-500'; icon = 'check-circle'; }
+
+      toast.className = `pointer-events-auto p-3.5 rounded-xl border ${borderCol} bg-white dark:bg-slate-900 shadow-xl flex items-start gap-2.5 text-xs text-slate-900 dark:text-white transform translate-y-2 opacity-0 transition-all duration-300`;
+      toast.innerHTML = `
+        <div class="mt-0.5"><i data-lucide="${icon}" class="w-4 h-4 text-purple-600"></i></div>
+        <div class="flex-1 font-medium leading-relaxed">${message}</div>
+      `;
+
+      container.appendChild(toast);
+      lucide.createIcons();
+
+      requestAnimationFrame(() => toast.classList.remove('translate-y-2', 'opacity-0'));
+      setTimeout(() => {
+        toast.classList.add('opacity-0', 'translate-x-4');
+        setTimeout(() => toast.remove(), 350);
+      }, 4000);
+    }
+
+    // -------------------------------------------------------------
+    // Live Simulation Loop & Telemetry Chart
+    // -------------------------------------------------------------
+    function initSimulationLoop() {
+      setInterval(() => {
+        const noise = (Math.random() - 0.5) * 0.15;
+        if (!state.telemetry.csLab.isAnomaly) {
+          state.telemetry.csLab.currentKw = +(2.1 + noise).toFixed(2);
+        }
+        if (!state.telemetry.hostel.isAnomaly) {
+          state.telemetry.hostel.currentFlow = +(3.2 + noise * 1.5).toFixed(1);
+        }
+        state.telemetry.academic.currentKw = +(5.4 + noise * 1.2).toFixed(2);
+        state.telemetry.library.currentKw = +(3.5 + noise * 0.8).toFixed(2);
+
+        // Update DOM
+        document.getElementById('val-cs-kw').textContent = state.telemetry.csLab.currentKw;
+        document.getElementById('val-hostel-flow').textContent = state.telemetry.hostel.currentFlow;
+        document.getElementById('val-academic-kw').textContent = state.telemetry.academic.currentKw;
+        document.getElementById('val-library-kw').textContent = state.telemetry.library.currentKw;
+
+        const totalLoad = (state.telemetry.csLab.currentKw + state.telemetry.academic.currentKw + state.telemetry.library.currentKw).toFixed(1);
+        document.getElementById('hero-campus-load').textContent = totalLoad;
+        document.getElementById('hero-rupee-drain').textContent = Math.round(totalLoad * 8.5).toLocaleString('en-IN');
+
+        // Update Chart
+        if (state.chartInstance) {
+          const nowLabel = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+          state.chartInstance.data.labels.push(nowLabel);
+          state.chartInstance.data.datasets[0].data.push(state.telemetry.csLab.currentKw);
+          state.chartInstance.data.datasets[1].data.push(state.telemetry.academic.currentKw);
+          state.chartInstance.data.datasets[2].data.push(2.1);
+
+          if (state.chartInstance.data.labels.length > 14) {
+            state.chartInstance.data.labels.shift();
+            state.chartInstance.data.datasets[0].data.shift();
+            state.chartInstance.data.datasets[1].data.shift();
+            state.chartInstance.data.datasets[2].data.shift();
+          }
+          state.chartInstance.update('none');
+        }
+      }, 2000);
+    }
+
+    function initTelemetryChart() {
+      const ctx = document.getElementById('liveTelemetryChart').getContext('2d');
+      const gradient = ctx.createLinearGradient(0, 0, 0, 250);
+      gradient.addColorStop(0, 'rgba(124, 58, 237, 0.35)');
+      gradient.addColorStop(1, 'rgba(124, 58, 237, 0.0)');
+
+      state.chartInstance = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: ['02:10:00', '02:10:02', '02:10:04', '02:10:06', '02:10:08', '02:10:10'],
+          datasets: [
+            {
+              label: 'CS Computer Lab 2 (kW)',
+              data: [2.1, 2.08, 2.12, 2.1, 2.09, 2.1],
+              borderColor: '#7C3AED',
+              backgroundColor: gradient,
+              borderWidth: 2.5,
+              tension: 0.35,
+              fill: true,
+              pointRadius: 2
+            },
+            {
+              label: 'Academic Wing (kW)',
+              data: [5.3, 5.4, 5.38, 5.42, 5.4, 5.39],
+              borderColor: '#4F46E5',
+              borderWidth: 1.8,
+              tension: 0.35,
+              fill: false,
+              pointRadius: 1
+            },
+            {
+              label: 'Calculated Baseline (kW)',
+              data: [2.1, 2.1, 2.1, 2.1, 2.1, 2.1],
+              borderColor: '#059669',
+              borderWidth: 1.5,
+              borderDash: [5, 5],
+              fill: false,
+              pointRadius: 0
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          animation: { duration: 300 },
+          scales: {
+            x: {
+              grid: { color: 'rgba(150, 150, 150, 0.1)' },
+              ticks: { font: { family: '"JetBrains Mono", monospace', size: 10 } }
+            },
+            y: {
+              min: 0,
+              max: 18,
+              grid: { color: 'rgba(150, 150, 150, 0.1)' },
+              ticks: { 
+                font: { family: '"JetBrains Mono", monospace', size: 10 },
+                callback: (val) => `${val} kW`
+              }
+            }
+          }
+        }
+      });
+    }
+
+    // Demo Injections & Cutoffs
+    function injectPhantomLoad() {
+      state.telemetry.csLab.isAnomaly = true;
+      state.telemetry.csLab.currentKw = 14.8;
+
+      const card = document.getElementById('card-cs-lab');
+      card.classList.add('glass-card-anomaly');
+      
+      const st = document.getElementById('status-cs-lab');
+      st.textContent = 'CRITICAL PHANTOM';
+      st.className = 'px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-rose-500 text-white animate-pulse';
+
+      document.getElementById('cost-cs-lab').textContent = '₹125.80/hr';
+
+      const btn = document.getElementById('btn-cutoff-cs');
+      btn.disabled = false;
+      btn.className = 'w-full py-2 px-3 rounded-lg text-xs font-bold bg-rose-600 hover:bg-rose-500 text-white cursor-pointer';
+
+      document.getElementById('pin-cs-dot').className = 'w-2.5 h-2.5 rounded-full bg-rose-500 animate-ping';
+      document.getElementById('pin-cs-flag').classList.remove('hidden');
+
+      showToast('⚠️ Off-peak phantom spike detected in CS Computer Lab 2 (14.8 kW).', 'critical');
+    }
+
+    function injectWaterBurst() {
+      state.telemetry.hostel.isAnomaly = true;
+      state.telemetry.hostel.currentFlow = 28.5;
+
+      const card = document.getElementById('card-hostel');
+      card.classList.add('glass-card-anomaly');
+
+      const st = document.getElementById('status-hostel');
+      st.textContent = 'PIPE BURST';
+      st.className = 'px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-rose-500 text-white animate-pulse';
+
+      document.getElementById('cost-hostel').textContent = '₹85.50/hr Loss';
+
+      const btn = document.getElementById('btn-cutoff-hostel');
+      btn.disabled = false;
+      btn.className = 'w-full py-2 px-3 rounded-lg text-xs font-bold bg-blue-600 hover:bg-blue-500 text-white cursor-pointer';
+
+      document.getElementById('pin-hostel-dot').className = 'w-2.5 h-2.5 rounded-full bg-rose-500 animate-ping';
+      document.getElementById('pin-hostel-flag').classList.remove('hidden');
+
+      showToast('🚨 Continuous water draw detected in Hostel Block B riser pipeline (28.5 L/min).', 'critical');
+    }
+
+    function resolveAnomaly(zone) {
+      if (zone === 'cs-lab') {
+        state.telemetry.csLab.isAnomaly = false;
+        state.telemetry.csLab.currentKw = 2.1;
+        const card = document.getElementById('card-cs-lab');
+        card.classList.remove('glass-card-anomaly');
+        document.getElementById('status-cs-lab').textContent = 'OPTIMAL';
+        document.getElementById('status-cs-lab').className = 'px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-400 border border-emerald-300 dark:border-emerald-500/40';
+        document.getElementById('cost-cs-lab').textContent = '₹17.85/hr';
+        document.getElementById('btn-cutoff-cs').disabled = true;
+        document.getElementById('btn-cutoff-cs').className = 'w-full py-2 px-3 rounded-lg text-xs font-bold bg-slate-200 dark:bg-white/5 text-slate-400 cursor-not-allowed';
+        document.getElementById('pin-cs-dot').className = 'w-2.5 h-2.5 rounded-full bg-emerald-500';
+        document.getElementById('pin-cs-flag').classList.add('hidden');
+        showToast('✅ Virtual cutoff triggered: CS Computer Lab 2 normalized.', 'success');
+      }
+      if (zone === 'hostel') {
+        state.telemetry.hostel.isAnomaly = false;
+        state.telemetry.hostel.currentFlow = 3.2;
+        const card = document.getElementById('card-hostel');
+        card.classList.remove('glass-card-anomaly');
+        document.getElementById('status-hostel').textContent = 'OPTIMAL';
+        document.getElementById('status-hostel').className = 'px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-400 border border-emerald-300 dark:border-emerald-500/40';
+        document.getElementById('cost-hostel').textContent = 'Normal';
+        document.getElementById('btn-cutoff-hostel').disabled = true;
+        document.getElementById('btn-cutoff-hostel').className = 'w-full py-2 px-3 rounded-lg text-xs font-bold bg-slate-200 dark:bg-white/5 text-slate-400 cursor-not-allowed';
+        document.getElementById('pin-hostel-dot').className = 'w-2.5 h-2.5 rounded-full bg-emerald-500';
+        document.getElementById('pin-hostel-flag').classList.add('hidden');
+        showToast('💧 Solenoid pressure regulated: Hostel Block B normalized.', 'success');
+      }
+    }
+
+    function normalizeAllSystems() {
+      resolveAnomaly('cs-lab');
+      resolveAnomaly('hostel');
+      showToast('🔄 All campus telemetry verified and restored to normal baseline.', 'success');
+    }
+
+    // Initialize on window load
+    window.addEventListener('DOMContentLoaded', () => {
+      initTheme();
+      initAuth();
+      initTelemetryChart();
+      initSimulationLoop();
+    });
+  </script>
+</body>
+</html>

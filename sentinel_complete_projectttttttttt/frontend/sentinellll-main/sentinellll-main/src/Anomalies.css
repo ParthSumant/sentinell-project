@@ -1,0 +1,286 @@
+
+.anomalies-page {
+  min-height: 100vh;
+  padding: 28px 5%;
+  color: #f4f0ff;
+  background:
+    radial-gradient(ellipse at 50% 0%, #282044 0%, transparent 45%),
+    #0b0a10;
+}
+
+.anomalies-topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+}
+
+.anomalies-back {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 11px 15px;
+  border: 1px solid #373140;
+  border-radius: 10px;
+  color: #e8e0f7;
+  background: #17141e;
+  cursor: pointer;
+}
+
+.anomalies-demo {
+  padding: 7px 11px;
+  border: 1px solid #65518a;
+  border-radius: 20px;
+  color: #d7b8ff;
+  font-size: 11px;
+  letter-spacing: 1px;
+}
+
+.anomalies-heading {
+  max-width: 760px;
+  margin: 65px auto 38px;
+  text-align: center;
+}
+
+.anomalies-eyebrow {
+  color: #b89adf;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 2px;
+}
+
+.anomalies-heading h1 {
+  margin: 14px 0;
+  font-size: clamp(34px, 5vw, 52px);
+  letter-spacing: -1.5px;
+}
+
+.anomalies-heading > p:last-child {
+  color: #aaa3b8;
+  line-height: 1.7;
+}
+
+.anomaly-summary {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 15px;
+  max-width: 1100px;
+  margin: 0 auto 48px;
+}
+
+.anomaly-summary article {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 23px;
+  border: 1px solid #30283a;
+  border-radius: 15px;
+  background: #15121c;
+}
+
+.anomaly-summary svg {
+  color: #c59aff;
+}
+
+.anomaly-summary span {
+  color: #aaa3b8;
+  font-size: 13px;
+}
+
+.anomaly-summary strong {
+  font-size: 30px;
+}
+
+.anomaly-list-section {
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.anomaly-list-heading {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+.anomaly-list-heading h2 {
+  margin: 6px 0;
+  font-size: 26px;
+}
+
+.anomaly-list-heading > span {
+  color: #bda2e9;
+  font-size: 13px;
+}
+
+.anomaly-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.anomaly-search {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  gap: 10px;
+  min-width: 220px;
+  padding: 0 13px;
+  border: 1px solid #393140;
+  border-radius: 10px;
+  color: #a99bbd;
+  background: #15121c;
+}
+
+.anomaly-search input {
+  width: 100%;
+  padding: 13px 0;
+  border: 0;
+  outline: none;
+  color: white;
+  background: transparent;
+}
+
+.anomaly-filters select {
+  min-width: 145px;
+  padding: 12px;
+  border: 1px solid #393140;
+  border-radius: 10px;
+  color: #f4f0ff;
+  background: #17141e;
+}
+
+.anomaly-list {
+  display: grid;
+  gap: 13px;
+}
+
+.anomaly-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  padding: 22px;
+  border: 1px solid #30283a;
+  border-radius: 15px;
+  background: #15121c;
+}
+
+.anomaly-resource-icon {
+  display: grid;
+  flex-shrink: 0;
+  width: 46px;
+  height: 46px;
+  place-items: center;
+  border-radius: 12px;
+  color: #d2a7ff;
+  background: #2a1d3b;
+}
+
+.anomaly-card-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.anomaly-card-title {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+
+.anomaly-card-title h3 {
+  margin: 0;
+  font-size: 16px;
+}
+
+.severity-pill {
+  padding: 5px 9px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.severity-high {
+  color: #ffaaaa;
+  background: #482329;
+}
+
+.severity-medium {
+  color: #ffd38b;
+  background: #46351e;
+}
+
+.severity-low {
+  color: #9be6c0;
+  background: #1b3b2c;
+}
+
+.anomaly-card-content > p {
+  margin: 10px 0;
+  color: #bdb3cc;
+  font-size: 13px;
+}
+
+.anomaly-card-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  color: #8f859e;
+  font-size: 12px;
+}
+
+.anomaly-empty {
+  padding: 45px 20px;
+  border: 1px dashed #55416c;
+  border-radius: 15px;
+  color: #bda2e9;
+  text-align: center;
+}
+
+.anomaly-empty h3 {
+  color: #f4f0ff;
+}
+
+.anomaly-empty p,
+.anomaly-disclaimer {
+  color: #aaa3b8;
+  font-size: 13px;
+  line-height: 1.7;
+}
+
+.anomaly-disclaimer {
+  margin-top: 22px;
+}
+
+@media (max-width: 650px) {
+  .anomalies-page {
+    padding: 20px 16px;
+  }
+
+  .anomalies-heading {
+    margin-top: 45px;
+  }
+
+  .anomaly-summary {
+    grid-template-columns: 1fr;
+  }
+
+  .anomaly-filters {
+    flex-direction: column;
+  }
+
+  .anomaly-filters select {
+    width: 100%;
+  }
+
+  .anomaly-list-heading {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .anomaly-card {
+    padding: 16px;
+  }
+}

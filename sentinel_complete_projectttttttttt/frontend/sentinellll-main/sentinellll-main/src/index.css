@@ -1,0 +1,158 @@
+
+:root {
+  font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+
+  --theme-bg: #0b0a10;
+  --theme-panel: #15121c;
+  --theme-card: #191521;
+  --theme-text: #f4f0ff;
+  --theme-muted: #aaa3b8;
+  --theme-border: #30283a;
+  --theme-accent: #b794f6;
+}
+
+html[data-theme="purple"] {
+  --theme-bg: #100b1c;
+  --theme-panel: #1b122b;
+  --theme-card: #251837;
+  --theme-text: #f7efff;
+  --theme-muted: #c1afd9;
+  --theme-border: #49315f;
+  --theme-accent: #c084fc;
+}
+
+html[data-theme="blue"] {
+  --theme-bg: #07111f;
+  --theme-panel: #0d1b2d;
+  --theme-card: #13243a;
+  --theme-text: #edf6ff;
+  --theme-muted: #a8bed8;
+  --theme-border: #294665;
+  --theme-accent: #60a5fa;
+}
+
+html[data-theme="green"] {
+  --theme-bg: #07140f;
+  --theme-panel: #0e2118;
+  --theme-card: #142d20;
+  --theme-text: #effff4;
+  --theme-muted: #a8c9b3;
+  --theme-border: #2b513a;
+  --theme-accent: #4ade80;
+}
+
+html[data-theme="black"] {
+  --theme-bg: #000000;
+  --theme-panel: #0b0b0b;
+  --theme-card: #141414;
+  --theme-text: #ffffff;
+  --theme-muted: #b5b5b5;
+  --theme-border: #303030;
+  --theme-accent: #d4d4d4;
+}
+
+html[data-theme="white"] {
+  --theme-bg: #f5f7fb;
+  --theme-panel: #ffffff;
+  --theme-card: #ffffff;
+  --theme-text: #172033;
+  --theme-muted: #637086;
+  --theme-border: #dce2eb;
+  --theme-accent: #6552d9;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  min-width: 320px;
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+  background: var(--theme-bg);
+  color: var(--theme-text);
+  transition: background-color 180ms ease, color 180ms ease;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+button,
+a,
+select {
+  -webkit-tap-highlight-color: transparent;
+}
+
+a {
+  color: inherit;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+/* Shared theme surfaces */
+.dashboard,
+.building-page,
+.resource-page,
+.anomalies-page,
+.landing-page {
+  background: var(--theme-bg);
+  color: var(--theme-text);
+}
+
+.dashboard-sidebar,
+.dashboard-header,
+.dashboard-panel,
+.dashboard-welcome,
+.dashboard-section,
+.resource-card,
+.settings-panel,
+.building-card,
+.resource-detail-card,
+.anomaly-card {
+  background-color: var(--theme-panel);
+  color: var(--theme-text);
+  border-color: var(--theme-border);
+}
+
+.dashboard p,
+.dashboard small,
+.dashboard .chart-caption {
+  color: var(--theme-muted);
+}
+
+.dashboard select,
+.settings-panel select {
+  background: var(--theme-card);
+  color: var(--theme-text);
+  border: 1px solid var(--theme-border);
+}
+
+.sidebar-link.active,
+.theme-option.selected {
+  border-color: var(--theme-accent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
+}

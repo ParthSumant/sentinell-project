@@ -1,0 +1,103 @@
+{
+  "settings": {
+    "tariffKwh": 8.5,
+    "carbonKwh": 0.82,
+    "waterLitre": 0.05
+  },
+  "reports": [
+    {
+      "id": "REP-5752",
+      "author": "Aarav Sharma",
+      "userRole": "user",
+      "zone": "CS Computer Lab 2",
+      "resource": "Electricity",
+      "severity": "CRITICAL",
+      "notes": "fgfdsvc",
+      "status": "SOLVED",
+      "timestamp": "2026-10-12 05:25:24",
+      "solvedAt": "2026-10-12 05:25:45",
+      "resolvedBy": "admin",
+      "resolutionNotes": "Facility inspection verified. Relay cutoff triggered and loss stopped.",
+      "estimatedLossPerHour": 108,
+      "lossAvertedTotal": 486
+    },
+    {
+      "id": "REP-7021",
+      "author": "Rohit Verma",
+      "userRole": "student",
+      "zone": "CS Computer Lab 2",
+      "resource": "Electricity",
+      "severity": "CRITICAL",
+      "notes": "High-spec desktop workstations and AC units running idle at 2:00 AM.",
+      "status": "SOLVED",
+      "timestamp": "2026-10-12 02:15:00",
+      "solvedAt": "2026-10-12 02:42:00",
+      "resolvedBy": "admin",
+      "resolutionNotes": "Virtual relay cutoff engaged. Power draw dropped from 14.8 kW to 2.1 kW.",
+      "estimatedLossPerHour": 108,
+      "lossAvertedTotal": 540
+    },
+    {
+      "id": "REP-7022",
+      "author": "Priya Sharma",
+      "userRole": "student",
+      "zone": "Hostel Block B",
+      "resource": "Water",
+      "severity": "WARNING",
+      "notes": "Continuous flow sound in 2nd floor bathroom riser pipeline.",
+      "status": "SOLVED",
+      "timestamp": "2026-10-12 04:30:00",
+      "solvedAt": "2026-10-12 05:10:00",
+      "resolvedBy": "admin",
+      "resolutionNotes": "Solenoid pressure valve throttled and maintenance dispatched.",
+      "estimatedLossPerHour": 75.9,
+      "lossAvertedTotal": 380
+    },
+    {
+      "id": "REP-7023",
+      "author": "Aarav Patel",
+      "userRole": "student",
+      "zone": "Main Academic Wing",
+      "resource": "Electricity",
+      "severity": "INFO",
+      "notes": "Corridor lights on 3rd floor remained active after classes ended at 6 PM.",
+      "status": "PENDING",
+      "timestamp": "2026-10-12 09:15:00",
+      "solvedAt": null,
+      "resolvedBy": null,
+      "resolutionNotes": null,
+      "estimatedLossPerHour": 34,
+      "lossAvertedTotal": 0
+    }
+  ],
+  "telemetryZones": [
+    {
+      "id": "cs-lab",
+      "name": "CS Computer Lab 2",
+      "baselineKw": 2.1,
+      "currentKw": 2.1,
+      "status": "optimal"
+    },
+    {
+      "id": "hostel",
+      "name": "Hostel Block B",
+      "baselineFlow": 3.2,
+      "currentFlow": 3.2,
+      "status": "optimal"
+    },
+    {
+      "id": "academic",
+      "name": "Main Academic Wing",
+      "baselineKw": 5.4,
+      "currentKw": 5.4,
+      "status": "optimal"
+    },
+    {
+      "id": "library",
+      "name": "Central Library",
+      "baselineKw": 3.5,
+      "currentKw": 3.5,
+      "status": "optimal"
+    }
+  ]
+}
